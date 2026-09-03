@@ -1,0 +1,37 @@
+{
+    "asiah": {
+        "name": "Asiah Davis",
+        "role": "admin",
+        "site": "PHX026",
+        "password_hash": "415e7bf0f02b77e7e7b7c8a7606c763c5db2f2e12dc7b40af8e1c9be2e55c7b1",
+        "must_change_password": false
+    },
+    "arwa": {
+        "name": "Arwa Hawwari",
+        "role": "manager",
+        "site": "PHX026",
+        "password_hash": "866485796cfa8d7c0cf7111640205b83076433547577511d81f8030ae99ecea5",
+        "must_change_password": true
+    },
+    "tech1": {
+        "name": "New Technician",
+        "role": "technician",
+        "site": "PHX026",
+        "password_hash": "f7ff17948e73597658f26d309eb85ffe334657cd124f791ad66ed9307993c45c",
+        "must_change_password": false
+    },
+    "lead1": {
+        "name": "Senior Tech",
+        "role": "team_lead",
+        "site": "PHX026",
+        "password_hash": "5830aa9ba1fd7843c92fd956cb640604e6d3bff683ddeeac778e0af21089a303",
+        "must_change_password": true
+    },
+    "davis": {
+        "name": "Davis",
+        "role": "team_lead",
+        "site": "PHX026",
+        "password_hash": "2fb844eeadc60e7685612547e3ffb9498e6d7aa769a58111c66443532d9c5a0a",
+        "must_change_password": true
+    }
+}
