@@ -6,6 +6,7 @@ import pyotp
 import qrcode
 import base64
 import io
+from openai import OpenAI
 from webhooks import notify_config_change
 from database import db_get_webhook_settings, db_save_webhook_settings
 from database import get_db
@@ -516,55 +517,53 @@ def ai_assistant_page():
         })
     return render_template("ai_assistant.html", commands=commands)
 
-
 @app.route("/ai/generate", methods=["POST"])
 @login_required
 @permission_required("propose_change")
 def ai_generate():
     data = request.get_json()
-    user_input = data.get("input", "")
+    prompt = data.get("input", "").strip()
     vendor = data.get("vendor", "cisco_ios")
     params = data.get("params", {})
-
-    # Parse the request
-    template_name = parse_request(user_input)
-
-    if not template_name:
-        return jsonify({
-            "success": False,
-            "message": f"I'm not sure what you mean by '{user_input}'. Try 'help' to see available commands."
-        })
-
-    template = TEMPLATES[template_name]
-
-    # If params weren't provided, ask for them
-    if not params and template.get("params", []):
+    if not prompt:
+        return jsonify({"success": False, "message": "No prompt provided"})
+    try:
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        if params:
+            param_str = ", ".join([f"{k}={v}" for k, v in params.items()])
+            full_prompt = f"{prompt} with these parameters: {param_str}"
+        else:
+            full_prompt = prompt
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": f"""You are SwytchAI, an expert network engineer AI assistant.
+Generate network device configurations for {vendor} devices.
+Rules:
+- Return ONLY the configuration commands, one per line
+- Use correct syntax for the specified vendor
+- Cisco IOS uses IOS syntax
+- Juniper uses JunOS set commands
+- Arista uses EOS syntax
+- NX-OS uses NX-OS syntax
+- Palo Alto uses PAN-OS syntax
+- Be concise and accurate"""},
+                {"role": "user", "content": full_prompt}
+            ],
+            max_tokens=1000,
+            temperature=0.3
+        )
+        config_text = response.choices.message.content
+        config_lines = config_text.strip().splitlines()
+        log_action(session.get("username", "unknown"), "AI_GENERATE", f"AI prompt: {prompt[:50]}")
         return jsonify({
             "success": True,
-            "needs_params": True,
-            "template_name": template_name,
-            "description": template["description"],
-            "params_needed": template.get("params", []),
+            "config_lines": config_lines,
+            "description": prompt,
+            "vendor": vendor
         })
-
-    # Generate the config
-    config_lines = generate_config(template_name, vendor, params)
-
-    if not config_lines:
-        return jsonify({
-            "success": False,
-            "message": f"Template '{template_name}' doesn't support vendor '{vendor}' yet."
-        })
-
-    return jsonify({
-        "success": True,
-        "needs_params": False,
-        "template_name": template_name,
-        "description": template["description"],
-        "config_lines": config_lines,
-        "vendor": vendor,
-    })
-
+    except Exception as e:
+        return jsonify({"success": False, "message": f"AI generation failed: {str(e)}"})
 
 # ============================================================
 # USER MANAGEMENT
@@ -701,25 +700,8 @@ def signup():
 @login_required
 @permission_required("manage_devices")
 def add_device_web():
-     if request.method == "POST":
-        # Check device limit
+    if request.method == "POST":
         org_id = session.get("org_id", 0)
-        conn = get_db()
-        device_count = conn.execute("SELECT COUNT(*) FROM devices WHERE org_id = ?", (org_id,)).fetchone()
-        org = conn.execute("SELECT subscription_plan FROM organizations WHERE org_id = ?", (org_id,)).fetchone()
-        plan_name = org if org else "free_trial"
-        allowed, msg = check_device_limit(plan_name, device_count)
-        if not allowed:
-            flash(msg, "error")
-            return redirect(url_for("devices"))
-        org_id = session.get("org_id", 0)
-        org = db_get_org_billing(org_id) or {}
-        plan = org.get("plan", "starter")
-        current_devices = len(db_get_org_devices(org_id))
-        allowed, msg = check_device_limit(plan, current_devices)
-        if not allowed:
-            flash(msg, "danger")
-            return redirect(url_for("devices"))
         hostname = request.form.get("hostname", "").strip()
         host = request.form.get("host", "").strip()
         vendor = request.form.get("vendor", "ios")
@@ -728,11 +710,23 @@ def add_device_web():
         if not hostname or not host or not username or not password:
             flash("All fields are required!", "danger")
             return redirect(url_for("add_device_web"))
+        try:
+            conn = get_db()
+            count = conn.execute("SELECT COUNT(*) FROM devices WHERE org_id = ?", (org_id,)).fetchone()
+            org_row = conn.execute("SELECT subscription_plan FROM organizations WHERE org_id = ?", (org_id,)).fetchone()
+            plan = org_row if org_row else "free_trial"
+            allowed, msg = check_device_limit(plan, count)
+            if not allowed:
+                flash(msg, "error")
+                return redirect(url_for("devices"))
+        except Exception:
+            pass
         db_add_device(org_id, hostname, host, vendor, username, password, session.get("username"))
         flash(f"Device '{hostname}' added!", "success")
         log_action(session["username"], "ADD_DEVICE", f"Added device: {hostname}")
         return redirect(url_for("devices"))
-        return render_template("add_device.html")
+    return render_template("add_device.html")
+
 @app.route("/devices/<int:device_id>/delete", methods=["POST"])
 @login_required
 @permission_required("manage_users")
