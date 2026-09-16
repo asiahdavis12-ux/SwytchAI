@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🔍 Search SwytchAI</h2>
+</div>
+
+<!-- Search Bar -->
+<form method="GET" action="{{ url_for('search') }}" style="margin-bottom: 2rem;">
+    <div style="display: flex; gap: 1rem;">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search devices, configs, audit logs, users..." autofocus style="flex: 1; padding: 1rem; background: #112240; color: #e6f1ff; border: 2px solid #1e3a5f; border-radius: 12px; font-size: 1.1rem;">
+        <button type="submit" style="padding: 1rem 2rem; background: linear-gradient(135deg, #00e5ff, #b388ff); color: #0a1929; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;">Search</button>
+    </div>
+</form>
+
+{% if query %}
+    {% if not results %}
+    <div style="text-align: center; padding: 3rem; color: #8892b0;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+        <p style="font-size: 1.2rem;">No results found for "<strong style="color: #e6f1ff;">{{ query }}</strong>"</p>
+        <p>Try a different search term</p>
+    </div>
+    {% else %}
+
+    <!-- Devices Results -->
+    {% if results.devices %}
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="color: #00e5ff; margin-bottom: 1rem;">📡 Devices ({{ results.devices|length }})</h3>
+        {% for device in results.devices %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #1e3a5f;">
+            <div>
+                <div style="color: #e6f1ff; font-weight: 600;">{{ device.hostname }}</div>
+                <div style="color: #8892b0; font-size: 0.85rem;">{{ device.host }} — {{ device.vendor }}</div>
+            </div>
+            <a href="{{ url_for('device_facts', device_id=device.device_id) }}" style="padding: 6px 16px; background: rgba(0,229,255,0.1); color: #00e5ff; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">View</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Changes Results -->
+    {% if results.changes %}
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="color: #ffd740; margin-bottom: 1rem;">🔄 Config Changes ({{ results.changes|length }})</h3>
+        {% for change in results.changes %}
+        <div style="padding: 0.75rem; border-bottom: 1px solid #1e3a5f;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: #e6f1ff; font-weight: 600;">{{ change.description }}</div>
+                <span style="padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;
+                    {% if change.status == 'PENDING' %}background: rgba(255,215,64,0.1); color: #ffd740;
+                    {% elif change.status == 'APPROVED' %}background: rgba(105,240,174,0.1); color: #69f0ae;
+                    {% else %}background: rgba(255,82,82,0.1); color: #ff5252;{% endif %}">{{ change.status }}</span>
+            </div>
+            <div style="color: #8892b0; font-size: 0.85rem;">{{ change.host }} — by {{ change.proposed_by }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Users Results -->
+    {% if results.users %}
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="color: #b388ff; margin-bottom: 1rem;">👥 Users ({{ results.users|length }})</h3>
+        {% for user in results.users %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #1e3a5f;">
+            <div>
+                <div style="color: #e6f1ff; font-weight: 600;">{{ user.name }}</div>
+                <div style="color: #8892b0; font-size: 0.85rem;">@{{ user.username }} — {{ user.role }}</div>
+            </div>
+            <div style="color: #8892b0; font-size: 0.85rem;">{{ user.email }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Audit Log Results -->
+    {% if results.audit %}
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="color: #69f0ae; margin-bottom: 1rem;">📋 Audit Log ({{ results.audit|length }})</h3>
+        {% for log in results.audit %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem; border-bottom: 1px solid #1e3a5f;">
+            <div style="min-width: 35px; height: 35px; background: linear-gradient(135deg, #00e5ff, #b388ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #0a1929; font-size: 0.75rem;">{{ log.username[:2]|upper }}</div>
+            <div style="flex: 1;">
+                <span style="color: #e6f1ff; font-weight: 600;">{{ log.username }}</span>
+                <span style="color: #00e5ff;"> {{ log.action }}</span>
+                <span style="color: #8892b0;"> {{ log.details }}</span>
+            </div>
+            <div style="color: #8892b0; font-size: 0.75rem; white-space: nowrap;">{{ log.timestamp }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% endif %}
+{% endif %}
+{% endblock %}

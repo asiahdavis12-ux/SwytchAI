@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Add Device{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Add New Device</h2>
+    <a href="{{ url_for('devices') }}" class="btn btn-secondary">Back to Devices</a>
+</div>
+
+<div class="card" style="max-width: 600px; margin-top: 1.5rem;">
+    <form method="POST" action="{{ url_for('add_device_web') }}">
+        <div style="margin-bottom: 1rem;">
+            <label><strong>Hostname / Label</strong></label><br>
+            <input type="text" name="hostname" placeholder="e.g. core-switch-01" required
+                   style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label><strong>Host / IP Address</strong></label><br>
+            <input type="text" name="host" placeholder="e.g. 192.168.1.1 or switch.company.com" required
+                   style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label><strong>Vendor</strong></label><br>
+            <select name="vendor" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                <option value="cisco_ios">Cisco IOS</option>
+                <option value="juniper_junos">Juniper JunOS</option>
+                <option value="arista_eos">Arista EOS</option>
+<option value="ubiquiti_edgeswitch">Ubiquiti EdgeSwitch</option>
+<option value="ubiquiti_edgerouter">Ubiquiti EdgeRouter</option>
+<option value="ubiquiti_unifiswitch">Ubiquiti UniFi Switch</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label><strong>SSH Username</strong></label><br>
+            <input type="text" name="username" placeholder="SSH username for this device" required
+                   style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label><strong>SSH Password</strong></label><br>
+            <input type="password" name="password" placeholder="SSH password for this device" required
+                   style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+        </div>
+<div style="margin-bottom: 1.5rem;">
+    <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Controller Port (UniFi only — default 8443)</label>
+    <input type="number" name="port" value="8443" style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+</div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Add Device</button>
+    </form>
+</div>
+{% endblock %}

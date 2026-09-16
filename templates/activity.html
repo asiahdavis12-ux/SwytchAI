@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Activity Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>📊 Organization Activity Dashboard</h2>
+    <p style="color: #8892b0;">Team activity and analytics for the last 30 days</p>
+</div>
+
+<!-- Stats Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="background: linear-gradient(135deg, #112240, #1a365d); padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #00e5ff;">{{ member_actions|length }}</div>
+        <div style="color: #8892b0; font-size: 0.85rem;">Active Team Members</div>
+    </div>
+    <div style="background: linear-gradient(135deg, #112240, #1a365d); padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #69f0ae;">{{ change_stats.get('approved', 0) + change_stats.get('pending', 0) + change_stats.get('rejected', 0) }}</div>
+        <div style="color: #8892b0; font-size: 0.85rem;">Total Config Changes</div>
+    </div>
+    <div style="background: linear-gradient(135deg, #112240, #1a365d); padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #b388ff;">{{ change_stats.get('pending', 0) }}</div>
+        <div style="color: #8892b0; font-size: 0.85rem;">Pending Approvals</div>
+    </div>
+    <div style="background: linear-gradient(135deg, #112240, #1a365d); padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #ffd740;">{{ recent|length }}</div>
+        <div style="color: #8892b0; font-size: 0.85rem;">Recent Actions</div>
+    </div>
+</div>
+
+<!-- Team Member Activity -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">👥 Team Member Activity</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #1e3a5f;">
+                <th style="padding: 0.75rem; text-align: left; color: #8892b0;">Member</th>
+                <th style="padding: 0.75rem; text-align: center; color: #8892b0;">Total Actions</th>
+                <th style="padding: 0.75rem; text-align: left; color: #8892b0;">Top Actions</th>
+                <th style="padding: 0.75rem; text-align: center; color: #8892b0;">Activity Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user, data in member_actions|dictsort(by='value', reverse=true) %}
+            <tr style="border-bottom: 1px solid #1e3a5f;">
+                <td style="padding: 0.75rem; color: #e6f1ff; font-weight: 600;">{{ user }}</td>
+                <td style="padding: 0.75rem; text-align: center; color: #00e5ff; font-weight: 700;">{{ data.total }}</td>
+                <td style="padding: 0.75rem; color: #8892b0;">
+                    {% for action, count in data.actions.items() %}
+                    <span style="background: rgba(0,229,255,0.1); color: #00e5ff; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">{{ action }}: {{ count }}</span>
+                    {% endfor %}
+                </td>
+                <td style="padding: 0.75rem; text-align: center;">
+                    <div style="background: #0a1929; border-radius: 8px; overflow: hidden; height: 8px;">
+                        {% set max_total = member_actions.values()|map(attribute='total')|max %}
+                        <div style="height: 100%; width: {{ (data.total / max_total * 100)|int }}%; background: linear-gradient(90deg, #00e5ff, #b388ff); border-radius: 8px;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Top Actions Chart -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem;">
+        <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🎯 Top Actions</h3>
+        {% for action, count in top_actions.items() %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #1e3a5f;">
+            <span style="color: #ccd6f6;">{{ action }}</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 100px; background: #0a1929; border-radius: 4px; height: 6px;">
+                    {% set max_count = top_actions.values()|max %}
+                    <div style="height: 100%; width: {{ (count / max_count * 100)|int }}%; background: #00e5ff; border-radius: 4px;"></div>
+                </div>
+                <span style="color: #00e5ff; font-weight: 600; font-size: 0.85rem;">{{ count }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem;">
+        <h3 style="color: #e6f1ff; margin-bottom: 1rem;">⏰ Peak Activity Hours</h3>
+        {% for hour, count in hourly_activity.items() %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0;">
+            <span style="color: #ccd6f6; font-size: 0.85rem;">{{ '%02d' % hour }}:00</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; margin-left: 1rem;">
+                <div style="flex: 1; background: #0a1929; border-radius: 4px; height: 6px;">
+                    {% set max_hour = hourly_activity.values()|max %}
+                    <div style="height: 100%; width: {{ (count / max_hour * 100)|int }}%; background: #b388ff; border-radius: 4px;"></div>
+                </div>
+                <span style="color: #b388ff; font-size: 0.8rem;">{{ count }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Change Status Breakdown -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🔄 Config Change Status</h3>
+    <div style="display: flex; gap: 2rem; justify-content: center;">
+        <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #ffd740;">{{ change_stats.get('pending', 0) }}</div>
+            <div style="color: #8892b0;">Pending</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #69f0ae;">{{ change_stats.get('approved', 0) }}</div>
+            <div style="color: #8892b0;">Approved</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #ff5252;">{{ change_stats.get('rejected', 0) }}</div>
+            <div style="color: #8892b0;">Rejected</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Feed -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">📋 Recent Activity Feed</h3>
+    <div style="max-height: 400px; overflow-y: auto;">
+        {% for item in recent[:25] %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid #1e3a5f;">
+            <div style="min-width: 40px; height: 40px; background: linear-gradient(135deg, #00e5ff, #b388ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #0a1929; font-size: 0.85rem;">{{ item.username[:2]|upper }}</div>
+            <div style="flex: 1;">
+                <div style="color: #e6f1ff;"><strong>{{ item.username }}</strong> — <span style="color: #00e5ff;">{{ item.action }}</span></div>
+                <div style="color: #8892b0; font-size: 0.8rem;">{{ item.details }} {% if item.target %} → {{ item.target }}{% endif %}</div>
+            </div>
+            <div style="color: #8892b0; font-size: 0.75rem; white-space: nowrap;">{{ item.timestamp }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

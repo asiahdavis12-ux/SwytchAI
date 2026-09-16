@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwytchAI — Contact Sales</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #0a1929 0%, #0d2137 50%, #0a1929 100%);">
+    <div style="width: 100%; max-width: 560px; padding: 2rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <span style="font-size: 3rem;">⚡</span>
+            <h1 style="color: #00e5ff; margin: 0.5rem 0 0.25rem; font-size: 2rem; letter-spacing: 2px;">SwytchAI</h1>
+            <p style="color: #b388ff; margin: 0; font-size: 1rem; font-weight: 600;">Enterprise Plan</p>
+            <p style="color: #78909c; margin: 0.5rem 0 0; font-size: 0.9rem;">Custom pricing tailored to your organization</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-{{ category }}" style="margin-bottom: 1rem;">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Tell Us About Your Needs</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('contact_sales') }}">
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex: 1; margin-bottom: 1.25rem;">
+                            <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">First Name</label>
+                            <input type="text" name="first_name" placeholder="John" required>
+                        </div>
+                        <div style="flex: 1; margin-bottom: 1.25rem;">
+                            <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Last Name</label>
+                            <input type="text" name="last_name" placeholder="Smith" required>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Work Email</label>
+                        <input type="email" name="email" placeholder="you@company.com" required>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Company Name</label>
+                        <input type="text" name="company" placeholder="Acme Networks Inc." required>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Job Title</label>
+                        <input type="text" name="job_title" placeholder="e.g. Network Manager, CTO, VP of IT">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex: 1; margin-bottom: 1.25rem;">
+                            <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Team Size</label>
+                            <select name="team_size" required style="width: 100%; padding: 0.65rem 0.9rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #fff; font-size: 0.9rem;">
+                                <option value="">Select...</option>
+                                <option value="10-25">10 - 25 users</option>
+                                <option value="26-50">26 - 50 users</option>
+                                <option value="51-100">51 - 100 users</option>
+                                <option value="100+">100+ users</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; margin-bottom: 1.25rem;">
+                            <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Number of Devices</label>
+                            <select name="device_count" required style="width: 100%; padding: 0.65rem 0.9rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #fff; font-size: 0.9rem;">
+                                <option value="">Select...</option>
+                                <option value="50-100">50 - 100 devices</option>
+                                <option value="101-500">101 - 500 devices</option>
+                                <option value="501-1000">501 - 1,000 devices</option>
+                                <option value="1000+">1,000+ devices</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Network Vendors Used</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.3rem;">
+                            <label style="color: #b0bec5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                                <input type="checkbox" name="vendors" value="cisco"> Cisco
+                            </label>
+                            <label style="color: #b0bec5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                                <input type="checkbox" name="vendors" value="juniper"> Juniper
+                            </label>
+                            <label style="color: #b0bec5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                                <input type="checkbox" name="vendors" value="arista"> Arista
+                            </label>
+                            <label style="color: #b0bec5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                                <input type="checkbox" name="vendors" value="paloalto"> Palo Alto
+                            </label>
+                            <label style="color: #b0bec5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                                <input type="checkbox" name="vendors" value="other"> Other
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="color: #b0bec5; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">What are you looking to achieve?</label>
+                        <textarea name="message" rows="4" placeholder="Tell us about your network automation goals, challenges, or specific requirements..." style="resize: vertical;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 1rem; background: linear-gradient(135deg, #b388ff, #7c4dff);">Request Custom Quote</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-body" style="padding: 1.25rem;">
+                <h3 style="color: #b388ff; text-align: center; margin-bottom: 1rem; font-size: 1rem;">Enterprise Includes Everything in Pro, Plus:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Unlimited users</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Unlimited devices</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">SSO integration</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Dedicated support</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Custom integrations</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Priority SLA</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">On-prem deployment option</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #b0bec5;">Advanced audit and compliance</div>
+                </div>
+            </div>
+        </div>
+
+        <p style="text-align: center; color: #78909c; margin-top: 1.5rem; font-size: 0.9rem;">
+            Not ready for Enterprise? <a href="{{ url_for('signup') }}" style="color: #00e5ff;">Start with a Free Trial</a>
+        </p>
+    </div>
+</body>
+</html>

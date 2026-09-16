@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+{% block title %}Device Facts{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📊 Device Facts</h1>
+    <p>{{ device.host }}</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">Error connecting to device: {{ error }}</div>
+{% elif facts %}
+<div class="facts-grid">
+    <div class="fact-card">
+        <div class="fact-label">Hostname</div>
+        <div class="fact-value">{{ facts.hostname }}</div>
+    </div>
+    <div class="fact-card">
+        <div class="fact-label">Vendor</div>
+        <div class="fact-value">{{ facts.vendor }}</div>
+    </div>
+    <div class="fact-card">
+        <div class="fact-label">Model</div>
+        <div class="fact-value">{{ facts.model }}</div>
+    </div>
+    <div class="fact-card">
+        <div class="fact-label">Serial Number</div>
+        <div class="fact-value">{{ facts.serial }}</div>
+    </div>
+    <div class="fact-card">
+        <div class="fact-label">OS Version</div>
+        <div class="fact-value">{{ facts.os_version }}</div>
+    </div>
+    <div class="fact-card">
+        <div class="fact-label">Interfaces</div>
+        <div class="fact-value">{{ facts.interfaces|length }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Interface List</h2>
+    </div>
+    <div class="card-body">
+        <div class="interface-list">
+            {% for intf in facts.interfaces %}
+            <span class="badge">{{ intf }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<a href="{{ url_for('devices') }}" class="btn">← Back to Devices</a>
+{% endblock %}
+

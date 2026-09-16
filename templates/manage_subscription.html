@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Manage billing{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="page-header">
+        <h1>💳 Manage Your Subscription</h1>
+        <p style="color: #78909c;">Change your plan or cancel anytime.</p>
+    </div>
+
+    <!-- Current Plan Banner -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 3px solid #00e5ff; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="color: #78909c; font-size: 0.85rem;">Current Plan</div>
+                <div style="color: #00e5ff; font-size: 1.5rem; font-weight: 700; text-transform: capitalize;">{{ current_plan }}</div>
+            </div>
+            <div style="color: #69f0ae; font-weight: 600;">Active ✅</div>
+        </div>
+    </div>
+
+    <!-- Plan Cards -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem;">
+        {% for plan_key, plan in plans.items() %}
+        <div class="card" style="padding: 2rem; text-align: center; position: relative; {% if current_plan == plan_key %}border: 2px solid #00e5ff;{% endif %}">
+            {% if current_plan == plan_key %}
+            <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #00e5ff; color: #0d1117; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 20px;">CURRENT PLAN</div>
+            {% endif %}
+            <div style="font-size: 1.25rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.25rem; text-transform: capitalize;">{{ plan_key }}</div>
+            <div style="font-size: 2rem; font-weight: 700; color: #00e5ff; margin-bottom: 0.25rem;">${{ plan.price }}<span style="font-size: 0.9rem; color: #78909c;">/mo</span></div>
+            <div style="color: #78909c; font-size: 0.85rem; margin-bottom: 1.25rem;">{{ plan.devices }} devices · {{ plan.users }} users</div>
+            
+            <ul style="text-align: left; color: #b0bec5; font-size: 0.85rem; list-style: none; padding: 0; margin-bottom: 1.5rem; line-height: 2;">
+                <li>✅ Config management</li>
+                <li>✅ AI assistant</li>
+                <li>✅ Approval workflow</li>
+                <li>{% if plan_key != 'starter' %}✅{% else %}❌{% endif %} API access</li>
+                <li>{% if plan_key == 'enterprise' %}✅{% else %}❌{% endif %} Priority support</li>
+            </ul>
+
+            {% if current_plan == plan_key %}
+                <button class="btn" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); color: #78909c; border: 1px solid rgba(255,255,255,0.1); cursor: default;">Current Plan</button>
+            {% elif current_plan == 'enterprise' and plan_key != 'enterprise' %}
+                <form method="POST" action="{{ url_for('change_plan') }}">
+                    <input type="hidden" name="new_plan" value="{{ plan_key }}">
+                    <button type="submit" class="btn" style="width: 100%; padding: 0.6rem; background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.2);" onclick="return confirm('Downgrade to {{ plan_key }}? Your limits will change at the end of this billing cycle.')">Downgrade</button>
+                </form>
+            {% elif plan_key == 'enterprise' %}
+                <a href="{{ url_for('contact_sales') }}" class="btn" style="display: block; width: 100%; padding: 0.6rem; background: linear-gradient(135deg, #b388ff, #7c4dff); color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: 600;">Contact Sales</a>
+            {% else %}
+                <form method="POST" action="{{ url_for('change_plan') }}">
+                    <input type="hidden" name="new_plan" value="{{ plan_key }}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.6rem;">Upgrade</button>
+                </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Cancel Section -->
+    <div class="card" style="padding: 1.5rem; border-left: 3px solid #ff5252;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="color: #e0e0e0; margin-bottom: 0.25rem;">Cancel Subscription</h3>
+                <p style="color: #78909c; font-size: 0.85rem;">Your account will remain active until the end of the current billing period.</p>
+            </div>
+            <form method="POST" action="{{ url_for('cancel_subscription') }}">
+                <button type="submit" class="btn" style="padding: 0.6rem 1.25rem; background: rgba(255,82,82,0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.2);" onclick="return confirm('Are you sure you want to cancel? Your account will remain active until the end of your billing period.')">Cancel Plan</button>
+            </form>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{{ url_for('billing_page') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c; border: 1px solid rgba(255,255,255,0.1);">← Back to Billing</a>
+    </div>
+</div>
+{% endblock %}

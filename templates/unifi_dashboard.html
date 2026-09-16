@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}UniFi Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🌐 UniFi Controller: {{ device.hostname }}</h2>
+    <a href="{{ url_for('devices') }}" style="padding: 8px 20px; background: rgba(0,229,255,0.1); color: #00e5ff; border-radius: 8px; text-decoration: none; font-weight: 600;">← Back to Devices</a>
+</div>
+
+<!-- Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #00e5ff;">{{ summary.total }}</div>
+        <div style="color: #8892b0;">Total Devices</div>
+    </div>
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #69f0ae;">{{ summary.online }}</div>
+        <div style="color: #8892b0;">Online</div>
+    </div>
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #ff5252;">{{ summary.offline }}</div>
+        <div style="color: #8892b0;">Offline</div>
+    </div>
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #b388ff;">{{ summary.switches }}</div>
+        <div style="color: #8892b0;">Switches</div>
+    </div>
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #ffd740;">{{ summary.access_points }}</div>
+        <div style="color: #8892b0;">Access Points</div>
+    </div>
+</div>
+
+<!-- Devices Table -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">📡 Devices</h3>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #1e3a5f;">
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">Name</th>
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">Model</th>
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">IP</th>
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">Version</th>
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">Clients</th>
+                    <th style="padding: 0.75rem; color: #8892b0; text-align: left;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in summary.devices %}
+                <tr style="border-bottom: 1px solid #1e3a5f;">
+                    <td style="padding: 0.75rem; color: #e6f1ff; font-weight: 600;">{{ d.name }}</td>
+                    <td style="padding: 0.75rem; color: #8892b0;">{{ d.model }}</td>
+                    <td style="padding: 0.75rem; color: #00e5ff;">{{ d.ip }}</td>
+                    <td style="padding: 0.75rem; color: #8892b0;">{{ d.version }}</td>
+                    <td style="padding: 0.75rem; color: #e6f1ff;">{{ d.clients }}</td>
+                    <td style="padding: 0.75rem;">
+                        {% if d.status == "Online" %}
+                        <span style="padding: 4px 12px; background: rgba(105,240,174,0.1); color: #69f0ae; border-radius: 4px; font-weight: 700; font-size: 0.85rem;">Online</span>
+                        {% else %}
+                        <span style="padding: 4px 12px; background: rgba(255,82,82,0.1); color: #ff5252; border-radius: 4px; font-weight: 700; font-size: 0.85rem;">Offline</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Networks/VLANs -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🌐 Networks & VLANs</h3>
+    {% if networks %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+        {% for net in networks %}
+        <div style="padding: 1rem; background: #0a1929; border-radius: 8px; border: 1px solid #1e3a5f;">
+            <div style="color: #e6f1ff; font-weight: 700;">{{ net.name }}</div>
+            <div style="color: #8892b0; font-size: 0.85rem; margin-top: 0.5rem;">
+                {% if net.vlan_enabled %}VLAN {{ net.vlan }}{% else %}Untagged{% endif %}
+            </div>
+            <div style="color: #00e5ff; font-size: 0.85rem;">{{ net.ip_subnet }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #8892b0;">No networks configured</p>
+    {% endif %}
+</div>
+
+<!-- Alarms -->
+{% if alarms %}
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem;">
+    <h3 style="color: #ff5252; margin-bottom: 1rem;">🚨 Active Alarms ({{ alarms|length }})</h3>
+    {% for alarm in alarms[:10] %}
+    <div style="padding: 0.75rem; border-bottom: 1px solid #1e3a5f; display: flex; justify-content: space-between;">
+        <span style="color: #e6f1ff;">{{ alarm.msg }}</span>
+        <span style="color: #8892b0; font-size: 0.85rem;">{{ alarm.datetime }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

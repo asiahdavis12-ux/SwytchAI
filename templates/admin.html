@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Admin Panel — {{ session.org_name or 'My Organization' }}</h2>
+<a href="{{ url_for('branding_settings') }}" class="btn" style="background: linear-gradient(135deg, #b388ff, #7c4dff); color: white; padding: 0.6rem 1.25rem;">🎨 Branding</a>
+</div>
+
+<!-- ORG STATS -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ team_members|length }}</div>
+        <div class="stat-label">Team Members</div>
+        <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ device_count }}</div>
+        <div class="stat-label">Devices</div>
+        <div class="stat-icon">🖧</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ org.plan or 'starter' }}</div>
+        <div class="stat-label">Current Plan</div>
+        <div class="stat-icon">📋</div>
+    </div>
+</div>
+
+<!-- INVITE TEAM MEMBER -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2>Invite Team Member</h2>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('invite_member') }}">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 150px;">
+                    <label><strong>Username</strong></label><br>
+                    <input type="text" name="username" placeholder="e.g. jsmith" required
+                           style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label><strong>Full Name</strong></label><br>
+                    <input type="text" name="name" placeholder="e.g. John Smith" required
+                           style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                <div style="flex: 1; min-width: 150px;">
+                    <label><strong>Email</strong></label><br>
+                    <input type="email" name="email" placeholder="user@company.com" required
+                           style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                </div>
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label><strong>Role</strong></label><br>
+                    <select name="role" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                        <option value="technician">Technician — Read-only access</option>
+                        <option value="team_lead">Team Lead — Propose changes</option>
+                        <option value="manager">Manager — Approve/reject changes</option>
+                        <option value="admin">Admin — Full access</option>
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label><strong>Temp Password</strong></label><br>
+                    <input type="password" name="password" placeholder="Min 8 characters" required
+                           style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff; margin-top:0.3rem;">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">+ Add Member</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TEAM MEMBERS TABLE -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2>Team Members</h2>
+    </div>
+    <div class="card-body">
+        {% if team_members %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in team_members %}
+                <tr>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.name }}</td>
+                    <td>
+                        {% if member.username == session.username %}
+                        <span class="badge badge-approved">{{ member.role }} (you)</span>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('change_member_role') }}" style="display:inline;">
+                            <input type="hidden" name="username" value="{{ member.username }}">
+                            <select name="role" onchange="this.form.submit()"
+                                    style="padding:0.4rem; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:#fff;">
+                                <option value="technician" {% if member.role == 'technician' %}selected{% endif %}>Technician</option>
+                                <option value="team_lead" {% if member.role == 'team_lead' %}selected{% endif %}>Team Lead</option>
+                                <option value="manager" {% if member.role == 'manager' %}selected{% endif %}>Manager</option>
+                                <option value="admin" {% if member.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </form>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.username != session.username %}
+                        <form method="POST" action="{{ url_for('admin_reset_password') }}" style="display:inline; margin-right: 0.5rem;">
+                            <input type="hidden" name="username" value="{{ member.username }}">
+                            <input type="password" name="new_password" placeholder="New password" required style="width: 120px; padding: 0.3rem 0.5rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff; font-size: 0.8rem;">
+                            <button type="submit" class="btn btn-sm" style="background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.2);">Reset PW</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('remove_member') }}" style="display:inline;">
+                            <input type="hidden" name="username" value="{{ member.username }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove {{ member.name }} from your organization?')">Remove</button>
+                        </form>
+                        {% else %}
+                        <span style="color: #78909c;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align:center; color:#78909c; padding:2rem;">No team members yet. Invite your first team member above!</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ROLE GUIDE -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2>Role Permissions Guide</h2>
+    </div>
+    <div class="card-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Technician</th>
+                    <th>Team Lead</th>
+                    <th>Manager</th>
+                    <th>Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>View configs & history</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Pull device configs</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Compare config versions</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Propose changes</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Approve/reject changes</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Push configs to devices</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Manage users & devices</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

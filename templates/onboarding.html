@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Welcome to SwytchAI{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
+
+    <!-- Progress Bar -->
+    <div style="margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="color: #00e5ff; font-size: 0.85rem; font-weight: 600;">Getting Started</span>
+            <span id="progress-text" style="color: #78909c; font-size: 0.85rem;">Step 1 of 4</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.06); border-radius: 10px; height: 8px; overflow: hidden;">
+            <div id="progress-bar" style="background: linear-gradient(90deg, #00e5ff, #69f0ae); height: 100%; width: 25%; border-radius: 10px; transition: width 0.5s ease;"></div>
+        </div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div id="step-1" class="onboard-step">
+        <div class="card" style="text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+            <h1 style="color: #e0e0e0; margin-bottom: 0.5rem;">Welcome to SwytchAI, {{ session.name }}!</h1>
+            <p style="color: #78909c; font-size: 1.1rem; margin-bottom: 2rem;">
+                Let's get your network automation platform set up in just a few steps.
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                <div style="background: rgba(0,229,255,0.08); border-radius: 12px; padding: 1.25rem; width: 180px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔌</div>
+                    <div style="color: #00e5ff; font-weight: 600;">Add Devices</div>
+                    <div style="color: #78909c; font-size: 0.8rem; margin-top: 0.25rem;">Connect your switches</div>
+                </div>
+                <div style="background: rgba(105,240,174,0.08); border-radius: 12px; padding: 1.25rem; width: 180px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📋</div>
+                    <div style="color: #69f0ae; font-weight: 600;">Pull Configs</div>
+                    <div style="color: #78909c; font-size: 0.8rem; margin-top: 0.25rem;">Backup automatically</div>
+                </div>
+                <div style="background: rgba(179,136,255,0.08); border-radius: 12px; padding: 1.25rem; width: 180px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
+                    <div style="color: #b388ff; font-weight: 600;">Invite Team</div>
+                    <div style="color: #78909c; font-size: 0.8rem; margin-top: 0.25rem;">Collaborate securely</div>
+                </div>
+            </div>
+            <button onclick="goToStep(2)" class="btn btn-primary" style="padding: 0.75rem 2.5rem; font-size: 1rem;">Let's Get Started →</button>
+        </div>
+    </div>
+
+    <!-- Step 2: Add Your First Device -->
+    <div id="step-2" class="onboard-step" style="display: none;">
+        <div class="card" style="padding: 2.5rem;">
+            <h2 style="color: #e0e0e0; margin-bottom: 0.5rem;">🔌 Add Your First Device</h2>
+            <p style="color: #78909c; margin-bottom: 1.5rem;">Connect a network switch to start managing configs. Enter the connection details below.</p>
+            
+            <form id="device-form" method="POST" action="{{ url_for('add_device_web') }}">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="color: #b0bec5; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Hostname</label>
+                        <input type="text" name="hostname" placeholder="e.g. core-switch-01" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                    </div>
+                    <div>
+                        <label style="color: #b0bec5; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Host / IP Address</label>
+                        <input type="text" name="host" placeholder="e.g. 192.168.1.1" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="color: #b0bec5; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Vendor</label>
+                        <select name="vendor" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                            <option value="ios">Cisco IOS</option>
+                            <option value="iosxr">Cisco IOS-XR</option>
+                            <option value="junos">Juniper JunOS</option>
+                            <option value="eos">Arista EOS</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="color: #b0bec5; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Username</label>
+                        <input type="text" name="username" placeholder="admin" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                    </div>
+                    <div>
+                        <label style="color: #b0bec5; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Password</label>
+                        <input type="password" name="password" placeholder="••••••••" style="width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Add Device</button>
+                    <button type="button" onclick="goToStep(3)" class="btn" style="padding: 0.6rem 1.5rem; background: rgba(255,255,255,0.06); color: #78909c; border: 1px solid rgba(255,255,255,0.1);">Skip for now →</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Step 3: Invite Team Members -->
+    <div id="step-3" class="onboard-step" style="display: none;">
+        <div class="card" style="padding: 2.5rem;">
+            <h2 style="color: #e0e0e0; margin-bottom: 0.5rem;">👥 Invite Your Team</h2>
+            <p style="color: #78909c; margin-bottom: 1.5rem;">Add team members so they can collaborate with you. You can assign roles to control access.</p>
+            
+            <div style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #b0bec5; font-size: 0.9rem; margin-bottom: 1rem;">Role Overview</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div style="padding: 0.75rem; background: rgba(0,229,255,0.06); border-radius: 8px;">
+                        <div style="color: #00e5ff; font-weight: 700; margin-bottom: 0.25rem;">Admin</div>
+                        <div style="color: #78909c; font-size: 0.8rem;">Full access — manage users, devices, configs, billing</div>
+                    </div>
+                    <div style="padding: 0.75rem; background: rgba(105,240,174,0.06); border-radius: 8px;">
+                        <div style="color: #69f0ae; font-weight: 700; margin-bottom: 0.25rem;">Engineer</div>
+                        <div style="color: #78909c; font-size: 0.8rem;">Pull configs, propose changes, view devices</div>
+                    </div>
+                    <div style="padding: 0.75rem; background: rgba(255,171,64,0.06); border-radius: 8px;">
+                        <div style="color: #ffab40; font-weight: 700; margin-bottom: 0.25rem;">Viewer</div>
+                        <div style="color: #78909c; font-size: 0.8rem;">View-only access — dashboards and reports</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Go to Admin Panel →</a>
+                <button type="button" onclick="goToStep(4)" class="btn" style="padding: 0.6rem 1.5rem; background: rgba(255,255,255,0.06); color: #78909c; border: 1px solid rgba(255,255,255,0.1);">Skip for now →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: All Done! -->
+    <div id="step-4" class="onboard-step" style="display: none;">
+        <div class="card" style="text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+            <h1 style="color: #e0e0e0; margin-bottom: 0.5rem;">You're All Set!</h1>
+            <p style="color: #78909c; font-size: 1.1rem; margin-bottom: 2rem;">
+                SwytchAI is ready to go. Here's what you can do next:
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 500px; margin: 0 auto 2rem;">
+                <a href="{{ url_for('dashboard') }}" class="card" style="padding: 1.25rem; text-align: center; text-decoration: none; border: 1px solid rgba(0,229,255,0.2); cursor: pointer;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
+                    <div style="color: #00e5ff; font-weight: 600;">Dashboard</div>
+                    <div style="color: #78909c; font-size: 0.8rem;">View your network overview</div>
+                </a>
+                <a href="{{ url_for('devices') }}" class="card" style="padding: 1.25rem; text-align: center; text-decoration: none; border: 1px solid rgba(105,240,174,0.2); cursor: pointer;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔌</div>
+                    <div style="color: #69f0ae; font-weight: 600;">Devices</div>
+                    <div style="color: #78909c; font-size: 0.8rem;">Manage your switches</div>
+                </a>
+                <a href="{{ url_for('ai_assistant_page') }}" class="card" style="padding: 1.25rem; text-align: center; text-decoration: none; border: 1px solid rgba(179,136,255,0.2); cursor: pointer;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+                    <div style="color: #b388ff; font-weight: 600;">AI Assistant</div>
+                    <div style="color: #78909c; font-size: 0.8rem;">Generate configs with AI</div>
+                </a>
+                <a href="{{ url_for('help_page') }}" class="card" style="padding: 1.25rem; text-align: center; text-decoration: none; border: 1px solid rgba(255,171,64,0.2); cursor: pointer;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📖</div>
+                    <div style="color: #ffab40; font-weight: 600;">Help & Docs</div>
+                    <div style="color: #78909c; font-size: 0.8rem;">Learn how to use SwytchAI</div>
+                </a>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="padding: 0.75rem 2.5rem; font-size: 1rem;">Go to Dashboard →</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var currentStep = 1;
+    
+    function goToStep(step) {
+        document.getElementById('step-' + currentStep).style.display = 'none';
+        document.getElementById('step-' + step).style.display = 'block';
+        currentStep = step;
+        document.getElementById('progress-bar').style.width = (step * 25) + '%';
+        document.getElementById('progress-text').textContent = 'Step ' + step + ' of 4';
+    }
+</script>
+{% endblock %}

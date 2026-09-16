@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %}Propose Change{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📝 Propose a Config Change</h1>
+    <p>Enter the config lines you want to push. They'll go through the approval workflow.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('propose_change_web') }}">
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" placeholder="Brief description of this change (e.g. 'Add VLAN 200 for Engineering')" required>
+            </div>
+            <div class="form-group">
+                <label for="config_lines">Config Lines</label>
+                <textarea id="config_lines" name="config_lines" rows="10" placeholder="Enter your config lines here, one per line...
+Example:
+vlan 200
+ name ENGINEERING
+interface GigabitEthernet1
+ switchport access vlan 200" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit for Approval</button>
+                <a href="{{ url_for('changes') }}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

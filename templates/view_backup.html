@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Backup Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header">
+    <h2>📄 Backup: {{ backup.hostname }}</h2>
+    <div>
+        <a href="{{ url_for('download_backup', backup_id=backup.backup_id) }}" class="btn btn-primary" style="margin-right: 0.5rem;">⬇️ Download Config</a>
+        <a href="{{ url_for('backups_page') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c;">← Back to Backups</a>
+    </div>
+</div>
+
+
+<div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        <div><span style="color: #78909c;">Device:</span> <strong>{{ backup.hostname }}</strong></div>
+        <div><span style="color: #78909c;">Type:</span> {{ backup.backup_type }}</div>
+        <div><span style="color: #78909c;">Status:</span>
+            {% if backup.status == 'success' %}
+            <span style="color: #69f0ae;">✅ Success</span>
+            {% else %}
+            <span style="color: #ff5252;">❌ Failed</span>
+            {% endif %}
+        </div>
+        <div><span style="color: #78909c;">Date:</span> {{ backup.created_at }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3>Running Configuration</h3></div>
+    <div class="card-body">
+        <pre style="background: #0d1117; color: #69f0ae; padding: 1.5rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; max-height: 600px; overflow-y: auto;">{{ backup.config_text }}</pre>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Config Backups{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🔄 Config Backups</h2>
+    <div>
+        <a href="{{ url_for('backup_settings') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c; margin-right: 0.5rem;">⚙️ Settings</a>
+        <a href="{{ url_for('export_all_backups') }}" class="btn" style="background: rgba(105,240,174,0.1); color: #69f0ae; border: 1px solid rgba(105,240,174,0.2); margin-right: 0.5rem;">📦 Export All (ZIP)</a>
+        <form method="POST" action="{{ url_for('run_backup_now_route') }}" style="display: inline;">
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Run backup on all devices now?')">⚡ Backup Now</button>
+        </form>
+    </div>
+</div>
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem; border-left: 3px solid #00e5ff;">
+    <p style="color: #78909c; margin: 0;">📅 Automatic backups run daily at <strong style="color: #00e5ff;">2:00 AM UTC</strong>. Use "Backup Now" to trigger an immediate backup.</p>
+</div>
+
+{% if backups %}
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th>Device</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for backup in backups %}
+        <tr>
+            <td>{{ backup.hostname }}</td>
+            <td>
+                {% if backup.backup_type == 'scheduled' %}
+                <span style="color: #78909c;">⏰ Scheduled</span>
+                {% else %}
+                <span style="color: #00e5ff;">⚡ Manual</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if backup.status == 'success' %}
+                <span class="badge badge-approved">✅ Success</span>
+                {% else %}
+                <span class="badge badge-rejected">❌ Failed</span>
+                {% endif %}
+            </td>
+            <td>{{ backup.created_at }}</td>
+            <td>
+                {% if backup.status == 'success' %}
+                  <a href="{{ url_for('view_backup', backup_id=backup.backup_id) }}" class="btn" style="padding: 0.3rem 0.75rem; font-size: 0.85rem;">👁️ View</a>
+                <a href="{{ url_for('download_backup', backup_id=backup.backup_id) }}" class="btn" style="padding: 0.3rem 0.75rem; font-size: 0.85rem; background: rgba(105,240,174,0.1); color: #69f0ae; border: 1px solid rgba(105,240,174,0.2);">⬇️ Download</a>
+
+                {% else %}
+                <span style="color: #ff5252; font-size: 0.85rem;">{{ backup.error_message }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem;">
+    <h3 style="color: #78909c;">No backups yet</h3>
+    <p style="color: #546e7a;">Click "Backup Now" to create your first backup!</p>
+</div>
+{% endif %}
+{% endblock %}

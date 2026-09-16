@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+{% block title %}Configs{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📂 Config Versions</h1>
+    <p>View and compare saved configurations</p>
+</div>
+
+{% for dc in device_configs %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ dc.host }} <span class="badge badge-vendor">{{ dc.vendor }}</span></h2>
+    </div>
+    <div class="card-body">
+        {% if dc.versions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Timestamp</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ver in dc.versions|reverse %}
+                <tr>
+                    <td><strong>v{{ ver.version }}</strong></td>
+                    <td>{{ ver.timestamp }}</td>
+                    <td>
+                        <a href="{{ url_for('view_config', host=dc.host, version=ver.version) }}" class="btn btn-sm">View</a>
+                        {% if not loop.last %}
+                        <a href="{{ url_for('diff_configs', host=dc.host, v1=ver.version - 1, v2=ver.version) }}" class="btn btn-sm btn-warning">Diff with Previous</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-state">No configs saved yet. Pull a config from the Devices page.</p>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+

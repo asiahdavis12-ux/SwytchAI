@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwytchAI — AI-Powered Network Automation</title>
+
+<!-- Link Preview / Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://swytchai.net">
+<meta property="og:title" content="SwytchAI — Network Automation for Modern Teams">
+<meta property="og:description" content="Automate configs across Cisco, Juniper, Arista & Ubiquiti. AI-powered config assistant, approval workflows, and full audit trails. Starting at $49/mo.">
+<meta property="og:image" content="https://swytchai.net/static/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SwytchAI — Network Automation for Modern Teams">
+<meta name="twitter:description" content="Automate configs across Cisco, Juniper, Arista & Ubiquiti. Starting at $49/mo.">
+<meta name="twitter:image" content="https://swytchai.net/static/og-image.png">
+
+<!-- Apple -->
+<meta name="apple-mobile-web-app-title" content="SwytchAI">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a1628;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        /* ── NAV ── */
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .landing-nav .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00e676;
+        }
+
+        .landing-nav .nav-links a {
+            color: #b0bec5;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .landing-nav .nav-links a:hover { color: #00e676; }
+
+        .landing-nav .nav-links .btn-login {
+            background: #00e676;
+            color: #0a1628;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 6rem 5% 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0, 230, 118, 0.15);
+            color: #00e676;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span { color: #00e676; }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #90a4ae;
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #00e676;
+            color: #0a1628;
+            padding: 0.9rem 2.5rem;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            padding: 0.9rem 2.5rem;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+        /* ── FEATURES ── */
+        .section {
+            padding: 5rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.05rem;
+            color: #78909c;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #121e30, #1a2d42);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 230, 118, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #ffffff;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #90a4ae;
+            font-size: 0.95rem;
+        }
+
+        /* ── HOW IT WORKS ── */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 230, 118, 0.15);
+            color: #00e676;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .step h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .step p { color: #90a4ae; }
+
+        /* ── SECURITY ── */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .security-item {
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid rgba(0, 230, 118, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .security-item .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+
+        .security-item h4 { color: #00e676; font-size: 0.95rem; }
+
+        /* ── ABOUT ── */
+        .about-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about-content p {
+            color: #90a4ae;
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-content .highlight {
+            color: #00e676;
+            font-weight: 600;
+        }
+
+        /* ── CTA ── */
+        .cta {
+            text-align: center;
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, #0d1f36, #162a45);
+            border-top: 1px solid rgba(0, 230, 118, 0.1);
+        }
+
+        .cta h2 {
+            font-size: 2.2rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: #90a4ae;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-form {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .cta-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .cta-form input::placeholder { color: #546e7a; }
+
+        .cta-form button {
+            background: #00e676;
+            color: #0a1628;
+            padding: 0.9rem 2rem;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .cta-form button:hover { transform: translateY(-2px); }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            padding: 2rem 5%;
+            color: #546e7a;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer a { color: #00e676; text-decoration: none; }
+
+        /* ── RESPONSIVE ── */
+ @media (max-width: 768px) {
+    .landing-nav {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem 5%;
+        text-align: center;
+    }
+
+    .landing-nav .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .landing-nav .nav-links a {
+        margin-left: 0;
+        font-size: 0.85rem;
+    }
+
+    .hero h1 { font-size: 2rem; }
+
+    .hero p {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav class="landing-nav">
+        <div class="brand">🔀 SwytchAI</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#security">Security</a>
+            <a href="#about">About</a>
+            <a href="{{ url_for('login') }}" class="btn-login">Log In</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">🚀 Now in Early Access</div>
+        <h1>Manage Your Network Configs with <span>AI-Powered</span> Automation</h1>
+        <p>SwytchAI is the intelligent platform that automates network configuration management across multi-vendor environments — with built-in approval workflows, version tracking, and AI assistance.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('signup') }}" class="btn-primary">Start Free Trial</a>
+            <a href="https://github.com/asiahdavis12-ux/SwytchAI" target="_blank" class="btn-secondary">⭐ View on GitHub</a>
+        </div>
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+        <h2 class="section-title">Everything You Need to Automate Your Network</h2>
+        <p class="section-subtitle">One platform. Every vendor. Full control.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔀</div>
+                <h3>Multi-Vendor Support</h3>
+                <p>Cisco, Juniper, Arista & Ubiquiti — all managed from one dashboard.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Config Assistant</h3>
+                <p>Type "create VLAN 200" and get vendor-specific configs instantly.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>Approval Workflows</h3>
+                <p>No unauthorized changes. Propose, review, approve, then push.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📜</div>
+                <h3>Version Tracking</h3>
+                <p>Every config versioned and timestamped. Compare diffs side-by-side.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Audit & Compliance</h3>
+                <p>Full audit trail of every action. Export-ready for compliance teams.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3>REST API & Webhooks</h3>
+                <p>Integrate with Slack, Teams, or any tool. Full API access included.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works">
+        <h2 class="section-title">Up and Running in Minutes</h2>
+        <p class="section-subtitle">No complex setup. No consultants. Just connect and go.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Add Your Devices</h3>
+                <p>Enter your switch credentials. We support Cisco, Juniper, Arista & Ubiquiti.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Automate with AI</h3>
+                <p>Pull configs, generate changes in plain English, and track every version.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Review & Deploy</h3>
+                <p>Approve changes through your workflow. Full audit trail on every push.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section class="section" id="security">
+        <h2 class="section-title">Enterprise-Grade Security</h2>
+        <p class="section-subtitle">Your network credentials are safe with us</p>
+
+        <div class="security-grid">
+            <div class="security-item">
+                <div class="icon">🔐</div>
+                <h4>Bcrypt Encryption</h4>
+            </div>
+            <div class="security-item">
+                <div class="icon">📱</div>
+                <h4>Two-Factor Auth</h4>
+            </div>
+            <div class="security-item">
+                <div class="icon">🛡️</div>
+                <h4>Rate Limiting</h4>
+            </div>
+            <div class="security-item">
+                <div class="icon">👥</div>
+                <h4>Role-Based Access</h4>
+            </div>
+            <div class="security-item">
+                <div class="icon">📋</div>
+                <h4>Full Audit Trail</h4>
+            </div>
+            <div class="security-item">
+                <div class="icon">🔑</div>
+                <h4>API Key Auth</h4>
+            </div>
+        </div>
+    </section>
+

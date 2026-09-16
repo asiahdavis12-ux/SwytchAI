@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>📊 Reports</h2>
+    <p style="color: #78909c;">Generate and download professional PDF reports for audits and management.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+
+    <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">🛡️</div>
+        <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">Compliance Report</h3>
+        <p style="color: #90a4ae; font-size: 0.9rem; margin-bottom: 1.25rem;">Download the last compliance scan as a professional PDF with scores, pass/fail details, and remediation steps.</p>
+        <form method="POST" action="{{ url_for('download_compliance_pdf') }}">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">📥 Download Compliance PDF</button>
+        </form>
+        <a href="{{ url_for('compliance_page') }}" style="display: block; text-align: center; margin-top: 0.75rem; color: #78909c; font-size: 0.85rem;">Run a compliance scan first →</a>
+    </div>
+
+    <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">🖧</div>
+        <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">Device Inventory Report</h3>
+        <p style="color: #90a4ae; font-size: 0.9rem; margin-bottom: 1.25rem;">Download a complete inventory of all devices in your organization with hostnames, IPs, and vendors.</p>
+        <a href="{{ url_for('download_devices_pdf') }}" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">📥 Download Device PDF</a>
+    </div>
+
+</div>
+{% endblock %}

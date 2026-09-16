@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <p style="color: #78909c;">Welcome back, {{ session.name }}! Here's your network overview.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem;">
+    <div class="card" style="text-align: center; padding: 1.5rem; border-top: 3px solid #00e5ff;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: #00e5ff;">{{ stats.total_devices }}</div>
+        <div style="color: #78909c; font-size: 0.9rem; margin-top: 0.25rem;">Total Devices</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.5rem; border-top: 3px solid #69f0ae;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: #69f0ae;">{{ stats.total_users }}</div>
+        <div style="color: #78909c; font-size: 0.9rem; margin-top: 0.25rem;">Team Members</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.5rem; border-top: 3px solid #ffab40;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: #ffab40;">{{ stats.change_counts.pending }}</div>
+        <div style="color: #78909c; font-size: 0.9rem; margin-top: 0.25rem;">Pending Changes</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.5rem; border-top: 3px solid #b388ff;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: #b388ff;">{{ stats.change_counts.approved }}</div>
+        <div style="color: #78909c; font-size: 0.9rem; margin-top: 0.25rem;">Approved Changes</div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+    <div class="card">
+        <div class="card-header"><h2>Activity (Last 7 Days)</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            <canvas id="activityChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h2>Device Vendors</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            <canvas id="vendorChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+    <div class="card">
+        <div class="card-header"><h2>Actions by Type</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            <canvas id="actionTypeChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h2>Top Active Users</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            <canvas id="topUsersChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Changes Over Time -->
+<div class="card" style="margin-bottom: 1.25rem;">
+    <div class="card-header"><h2>Config Changes (Last 30 Days)</h2></div>
+    <div class="card-body" style="padding: 1rem;">
+        <canvas id="changesChart" height="150"></canvas>
+    </div>
+</div>
+
+<!-- Device Health Panel -->
+<div class="card" style="margin-bottom: 1.25rem;">
+    <div class="card-header"><h2>Device Health</h2></div>
+    <div class="card-body" style="padding: 1.25rem;">
+        <div id="health-panel" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+            <div style="text-align: center; padding: 2rem; color: #78909c;">
+                <span style="font-size: 1.5rem;">⏳</span>
+                <p>Checking devices...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header"><h2>Quick Actions</h2></div>
+    <div class="card-body" style="padding: 1.25rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{{ url_for('add_device_web') }}" class="btn btn-primary">+ Add Device</a>
+            <a href="{{ url_for('changes') }}" class="btn" style="background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.2);">View Changes</a>
+            <a href="{{ url_for('ai_assistant_page') }}" class="btn" style="background: rgba(179,136,255,0.15); color: #b388ff; border: 1px solid rgba(179,136,255,0.2);">AI Assistant</a>
+            <a href="{{ url_for('audit_page') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #b0bec5; border: 1px solid rgba(255,255,255,0.1);">Audit Log</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var stats = JSON.parse('{{ stats_json | safe }}');
+
+    var cyan = '#00e5ff';
+    var green = '#69f0ae';
+    var orange = '#ffab40';
+    var purple = '#b388ff';
+    var red = '#ff5252';
+    var chartColors = [cyan, orange, purple, green, red, '#40c4ff', '#ffd740', '#ea80fc'];
+
+    Chart.defaults.color = '#78909c';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+    Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+    // 1. Activity Line Chart
+    new Chart(document.getElementById('activityChart'), {
+        type: 'line',
+        data: {
+            labels: Object.keys(stats.daily_activity).map(function(d) { return d.substring(5); }),
+            datasets: [{
+                label: 'Actions',
+                data: Object.values(stats.daily_activity),
+                borderColor: cyan,
+                backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: cyan,
+                pointRadius: 5
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // 2. Vendor Doughnut
+    var vendorLabels = Object.keys(stats.vendor_distribution);
+    var vendorData = Object.values(stats.vendor_distribution);
+    new Chart(document.getElementById('vendorChart'), {
+        type: 'doughnut',
+        data: {
+            labels: vendorLabels.length > 0 ? vendorLabels : ['No devices yet'],
+            datasets: [{ data: vendorData.length > 0 ? vendorData : [1], backgroundColor: vendorData.length > 0 ? chartColors.slice(0, vendorLabels.length) : ['rgba(255,255,255,0.1)'], borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { padding: 15 } } } }
+    });
+
+    // 3. Action Types Bar
+    var actionLabels = Object.keys(stats.activity_by_type);
+    var actionData = Object.values(stats.activity_by_type);
+    new Chart(document.getElementById('actionTypeChart'), {
+        type: 'bar',
+        data: {
+            labels: actionLabels.length > 0 ? actionLabels : ['No activity yet'],
+            datasets: [{ label: 'Count', data: actionData.length > 0 ? actionData : [0], backgroundColor: chartColors.slice(0, actionLabels.length), borderRadius: 6, maxBarThickness: 40 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // 4. Top Users Horizontal Bar
+    var userLabels = Object.keys(stats.top_users);
+    var userData = Object.values(stats.top_users);
+    new Chart(document.getElementById('topUsersChart'), {
+        type: 'bar',
+        data: {
+            labels: userLabels.length > 0 ? userLabels : ['No activity yet'],
+            datasets: [{ label: 'Actions', data: userData.length > 0 ? userData : [0], backgroundColor: green, borderRadius: 6, maxBarThickness: 30 }]
+        },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // 5. Changes Over Time
+    new Chart(document.getElementById('changesChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(stats.changes_over_time).map(function(d) { return d.substring(5); }),
+            datasets: [{ label: 'Config Changes', data: Object.values(stats.changes_over_time), backgroundColor: 'rgba(179, 136, 255, 0.4)', borderColor: purple, borderWidth: 1, borderRadius: 4, maxBarThickness: 20 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // 6. Device Health Panel
+    fetch('/api/health-check')
+        .then(function(res) { return res.json(); })
+        .then(function(devices) {
+            var panel = document.getElementById('health-panel');
+            if (devices.length === 0) {
+                panel.innerHTML = '<div style="text-align: center; padding: 2rem; color: #78909c;"><p>No devices added yet. <a href="/devices/add" style="color: #00e5ff;">Add a device</a></p></div>';
+                return;
+            }
+            panel.innerHTML = '';
+            devices.forEach(function(d) {
+                var isOnline = d.status === 'online';
+                var color = isOnline ? '#69f0ae' : '#ff5252';
+                var icon = isOnline ? '🟢' : '🔴';
+                var statusText = isOnline ? 'Online' : 'Offline';
+                var card = document.createElement('div');
+                card.style.cssText = 'background: rgba(255,255,255,0.03); border-radius: 10px; padding: 1.25rem; border-left: 3px solid ' + color + '; cursor: pointer;';
+                card.onclick = function() { window.location.href = '/devices/' + d.device_id + '/health'; };
+                card.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">' +
+                    '<span style="font-weight: 700; color: #e0e0e0;">' + d.hostname + '</span>' +
+                    '<span>' + icon + ' <span style="color:' + color + '; font-size: 0.85rem; font-weight: 600;">' + statusText + '</span></span>' +
+                    '</div>' +
+                    (isOnline ? '<div style="display: flex; gap: 1rem; font-size: 0.8rem; color: #78909c;">' +
+                    '<span>Ports: <span style="color: #69f0ae; font-weight: 600;">' + d.up_ports + ' up</span></span>' +
+                    '<span><span style="color: #ff5252; font-weight: 600;">' + d.down_ports + ' down</span></span>' +
+                    (d.error_ports > 0 ? '<span><span style="color: #ffab40; font-weight: 600;">' + d.error_ports + ' errors</span></span>' : '') +
+                    '</div>' : '<div style="font-size: 0.8rem; color: #ff5252;">' + (d.error || 'Connection failed') + '</div>');
+                panel.appendChild(card);
+            });
+        })
+        .catch(function() {
+            document.getElementById('health-panel').innerHTML = '<div style="text-align: center; padding: 2rem; color: #78909c;"><p>Could not check device health.</p></div>';
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Verify 2FA{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+    <h2 style="color: #e0e0e0; margin-bottom: 0.5rem;">Two-Factor Verification</h2>
+    <p style="color: #78909c; margin-bottom: 2rem;">Enter the 6-digit code from your authenticator app.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div style="padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; background: rgba(255,82,82,0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.2);">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('verify_2fa') }}">
+        <input type="text" name="code" placeholder="000000" maxlength="6" required autofocus
+               style="width: 100%; padding: 1rem; font-size: 1.5rem; text-align: center; letter-spacing: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff; margin-bottom: 1.5rem; font-family: 'Courier New', monospace;">
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">✅ Verify</button>
+    </form>
+
+    <a href="{{ url_for('login') }}" style="display: block; margin-top: 1.5rem; color: #78909c; font-size: 0.85rem;">← Back to Login</a>
+</div>
+{% endblock %}

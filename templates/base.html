@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% if brand and brand.primary_color %}
+<style>
+    :root {
+        --brand-primary: {{ brand.primary_color }};
+        --brand-secondary: {{ brand.secondary_color or '#b388ff' }};
+        --brand-accent: {{ brand.accent_color or '#69f0ae' }};
+        --brand-bg: {{ brand.background_color or '#0a1929' }};
+        --brand-card: {{ brand.card_color or '#112240' }};
+        --brand-sidebar: {{ brand.sidebar_color or '#0d1117' }};
+    }
+    body { background: var(--brand-bg) !important; }
+    .card, .card-body { background: var(--brand-card) !important; }
+    .btn-primary { background: var(--brand-primary) !important; }
+    a:not(.btn) { color: var(--brand-primary); }
+    h1, h2, h3 { color: var(--brand-primary) !important; }
+    .badge-approved { background: var(--brand-accent) !important; }
+    {{ brand.custom_css or '' }}
+</style>
+{% endif %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwytchAI — {% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+<div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    {% if session.username %}
+<a href="{{ url_for('profile') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">👤 Profile</a>
+    <nav style="background: rgba(10, 25, 41, 0.95); border-bottom: 1px solid rgba(0, 229, 255, 0.1); padding: 0.75rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);">
+       <a href="{{ url_for('dashboard') }}" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+    {% if brand and brand.logo_url %}
+    <img src="{{ brand.logo_url }}" alt="{{ brand.company_name or 'SwytchAI' }}" style="height: 32px; margin-right: 0.5rem;">
+    {% else %}
+    <span style="font-size: 1.3rem;">⚡</span>
+    {% endif %}
+    <span style="color: {{ brand.primary_color if brand and brand.primary_color else '#00e5ff' }}; font-weight: 700; font-size: 1.2rem; letter-spacing: 1px;">{{ brand.company_name if brand and brand.company_name else 'SwytchAI' }}</span>
+</a>
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+<form method="GET" action="{{ url_for('search') }}" style="display: flex;">
+    <input type="text" name="q" placeholder="🔍 Search..." style="padding: 6px 12px; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px; font-size: 0.85rem; width: 180px;">
+</form>
+            <a href="{{ url_for('dashboard') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Dashboard</a>
+            <a href="{{ url_for('devices') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Devices</a>
+            <a href="/backups">🔄 Backups</a>
+            <a href="{{ url_for('changes') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Changes</a>
+            <a href="{{ url_for('ai_assistant_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">🤖 AI</a>
+            <a href="{{ url_for('notifications_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">🔔{% if unread_count > 0 %}<span class="notif-badge">{{ unread_count }}</span>{% endif %}</a>
+            <a href="{{ url_for('audit_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Audit</a>
+<a href="{{ url_for('activity_dashboard') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">📊 Activity</a>
+            <a href="{{ url_for('help_page') }}" class="nav-link">📖 Help</a>
+<a href="{{ url_for('config_templates') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">📋 Templates</a>
+<a href="{{ url_for('compliance_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">🛡️ Compliance</a>
+<a href="{{ url_for('reports_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">📊 Reports</a>
+            <a href="{{ url_for('admin_panel') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">⚙️ Admin</a>
+<a href="{{ url_for('webhook_settings') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">🔗 Webhooks</a>
+            <a href="{{ url_for('billing_page') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">💳 Billing</a>
+<a href="{{ url_for('setup_2fa') }}" style="color: #b0bec5; text-decoration: none; font-size: 0.9rem; font-weight: 500;">🔐 2FA</a>
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.1);">
+                <span style="color: #78909c; font-size: 0.85rem;">{{ session.name }}</span>
+                <a href="{{ url_for('logout') }}" style="color: #ff5252; text-decoration: none; font-size: 0.85rem; font-weight: 500;">Logout</a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-{{ category }}">
+            {{ message }}
+            <span style="float: right; cursor: pointer;" onclick="this.parentElement.remove()">✕</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block scripts %}{%endblock %}
+</body>
+<script>
+function toggleMobileMenu() {
+    var sidebar = document.querySelector('.sidebar');
+    var overlay = document.querySelector('.mobile-overlay');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+}
+</script>
+</html>

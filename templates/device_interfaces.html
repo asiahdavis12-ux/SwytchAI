@@ -1,0 +1,46 @@
+
+{% extends "base.html" %}
+{% block title %}Interfaces{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔌 Interfaces</h1>
+    <p>{{ device.host }}</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">Error: {{ error }}</div>
+{% elif interfaces %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Interface</th>
+            <th>Status</th>
+            <th>Speed</th>
+            <th>MAC Address</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for name, info in interfaces.items() %}
+        <tr>
+            <td><strong>{{ name }}</strong></td>
+            <td>
+                {% if info.is_up %}
+                <span class="badge badge-approved">✅ UP</span>
+                {% else %}
+                <span class="badge badge-rejected">❌ DOWN</span>
+                {% endif %}
+            </td>
+            <td>{{ info.speed }} Mbps</td>
+            <td><code>{{ info.mac_address }}</code></td>
+            <td>{{ info.description or "—" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<a href="{{ url_for('devices') }}" class="btn">← Back to Devices</a>
+{% endblock %}
+

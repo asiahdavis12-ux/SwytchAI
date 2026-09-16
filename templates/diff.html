@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %}Diff v{{ v1 }} → v{{ v2 }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔍 Config Diff</h1>
+    <p>{{ host }} — v{{ v1 }} → v{{ v2 }}</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if diff %}
+        <div class="diff-view">
+            {% for line in diff %}
+            {% if line.startswith('+') and not line.startswith('+++') %}
+            <div class="diff-added">{{ line }}</div>
+            {% elif line.startswith('-') and not line.startswith('---') %}
+            <div class="diff-removed">{{ line }}</div>
+            {% elif line.startswith('@@') %}
+            <div class="diff-info">{{ line }}</div>
+            {% else %}
+            <div class="diff-context">{{ line }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">✅ No changes detected — configs are identical!</p>
+        {% endif %}
+    </div>
+</div>
+
+<a href="{{ url_for('configs') }}" class="btn">← Back to Configs</a>
+{% endblock %}
+

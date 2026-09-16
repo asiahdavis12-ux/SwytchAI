@@ -1,0 +1,96 @@
+
+{% extends "base.html" %}
+{% block title %}Audit Log{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📜 Audit Log</h1>
+    <p>Complete history of all SwytchAI actions</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Filter</h2>
+<a href="{{ url_for('export_audit') }}" style="padding: 8px 20px; background: linear-gradient(135deg, #00e5ff, #b388ff); color: #0a1929; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem;">📥 Export CSV</a>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('audit_page') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="user">User</label>
+                <select id="user" name="user">
+                    <option value="">All Users</option>
+                    {% for u in users_in_log %}
+                    <option value="{{ u }}" {% if u == filter_user %}selected{% endif %}>{{ u }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="action">Action</label>
+                <select id="action" name="action">
+                    <option value="">All Actions</option>
+                    {% for a in all_actions %}
+                    <option value="{{ a }}" {% if a == filter_action %}selected{% endif %}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ url_for('audit_page') }}" class="btn">Clear</a>
+        </form>
+    </div>
+</div>
+
+{% if entries %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ entries|length }} Entries</h2>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.timestamp }}</td>
+                    <td><strong>{{ entry.username }}</strong></td>
+                    <td>
+                        {% if "LOGIN" in entry.action %}
+                        <span class="badge badge-vendor">🔑 {{ entry.action }}</span>
+                        {% elif "APPROVE" in entry.action %}
+                        <span class="badge badge-approved">✅ {{ entry.action }}</span>
+                        {% elif "REJECT" in entry.action %}
+                        <span class="badge badge-rejected">🚫 {{ entry.action }}</span>
+                        {% elif "PROPOSE" in entry.action %}
+                        <span class="badge badge-pending">📝 {{ entry.action }}</span>
+                        {% elif "PULL" in entry.action %}
+                        <span class="badge badge-vendor">⬇️ {{ entry.action }}</span>
+                        {% elif "LOGOUT" in entry.action %}
+                        <span class="badge">👋 {{ entry.action }}</span>
+                        {% elif "USER" in entry.action %}
+                        <span class="badge badge-vendor">👤 {{ entry.action }}</span>
+                        {% elif "AI" in entry.action %}
+                        <span class="badge badge-approved">🤖 {{ entry.action }}</span>
+                        {% else %}
+                        <span class="badge">{{ entry.action }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ entry.details }}</td>
+                    <td>{{ entry.target }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p class="empty-state">📜 No audit entries found.</p>
+{% endif %}
+{% endblock %}
+

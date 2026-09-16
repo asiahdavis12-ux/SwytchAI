@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>👤 My Profile</h2>
+    <p style="color: #8892b0;">Manage your account settings</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Profile Info -->
+    <div style="background: #112240; border-radius: 12px; padding: 2rem;">
+        <h3 style="color: #e6f1ff; margin-bottom: 1.5rem;">📝 Personal Info</h3>
+        <form method="POST">
+            <input type="hidden" name="action" value="update_info">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Username</label>
+                <input type="text" value="{{ user.username }}" disabled style="width: 100%; padding: 0.75rem; background: #0a1929; color: #8892b0; border: 1px solid #1e3a5f; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Full Name</label>
+                <input type="text" name="name" value="{{ user.name }}" required style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Email</label>
+                <input type="email" name="email" value="{{ user.email }}" required style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Role</label>
+                <input type="text" value="{{ user.role }}" disabled style="width: 100%; padding: 0.75rem; background: #0a1929; color: #8892b0; border: 1px solid #1e3a5f; border-radius: 8px;">
+            </div>
+            <button type="submit" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #00e5ff, #b388ff); color: #0a1929; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Save Changes</button>
+        </form>
+    </div>
+
+    <div>
+        <!-- Change Password -->
+        <div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+            <h3 style="color: #e6f1ff; margin-bottom: 1.5rem;">🔒 Change Password</h3>
+            <form method="POST">
+                <input type="hidden" name="action" value="change_password">
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Current Password</label>
+                    <input type="password" name="current_password" required style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">New Password</label>
+                    <input type="password" name="new_password" required style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Confirm New Password</label>
+                    <input type="password" name="confirm_password" required style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+                </div>
+                <button type="submit" style="width: 100%; padding: 0.75rem; background: #ff5252; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Change Password</button>
+            </form>
+        </div>
+
+        <!-- Security Settings -->
+        <div style="background: #112240; border-radius: 12px; padding: 2rem;">
+            <h3 style="color: #e6f1ff; margin-bottom: 1.5rem;">🔐 Security</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #0a1929; border-radius: 8px; margin-bottom: 1rem;">
+                <div>
+                    <div style="color: #e6f1ff; font-weight: 600;">Two-Factor Authentication</div>
+                    <div style="color: #8892b0; font-size: 0.85rem;">Extra security for your account</div>
+                </div>
+                {% if user.totp_secret %}
+                <span style="padding: 6px 16px; background: rgba(105,240,174,0.1); color: #69f0ae; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">✅ Enabled</span>
+                {% else %}
+                <a href="{{ url_for('enable_2fa') }}" style="padding: 6px 16px; background: rgba(255,215,64,0.1); color: #ffd740; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.85rem;">Enable</a>
+                {% endif %}
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #0a1929; border-radius: 8px;">
+                <div>
+                    <div style="color: #e6f1ff; font-weight: 600;">Account Created</div>
+                    <div style="color: #8892b0; font-size: 0.85rem;">{{ user.created_at }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

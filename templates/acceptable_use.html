@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Acceptable Use Policy{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 2rem auto;">
+    <div class="card-header">
+        <h2>Acceptable Use Policy</h2>
+    </div>
+    <div class="card-body" style="line-height: 1.8;">
+        <p><strong>Last Updated:</strong> September 8, 2026</p>
+        <p>This Acceptable Use Policy ("AUP") governs the use of SwytchAI. Violations may result in suspension or termination of your account.</p>
+
+        <h3>1. Authorized Use Only</h3>
+        <p>You may only use SwytchAI to manage network devices that you own or have explicit written authorization to manage. Unauthorized access to any network device through SwytchAI is strictly prohibited.</p>
+
+        <h3>2. Prohibited Activities</h3>
+        <ul>
+            <li>Using SwytchAI to gain unauthorized access to networks or devices</li>
+            <li>Pushing malicious configurations designed to disrupt network operations</li>
+            <li>Sharing account credentials with unauthorized individuals</li>
+            <li>Attempting to bypass plan limits or access controls</li>
+            <li>Using the API to perform automated attacks or abuse</li>
+            <li>Storing illegal content or using the Service for illegal purposes</li>
+            <li>Reselling or redistributing the Service without written permission</li>
+            <li>Intentionally overloading or disrupting the Service</li>
+        </ul>
+
+        <h3>3. Credential Security</h3>
+        <p>You are responsible for the security of all device credentials stored in SwytchAI. We recommend:</p>
+        <ul>
+            <li>Using unique service accounts for SwytchAI connections</li>
+            <li>Regularly rotating device passwords</li>
+            <li>Using the principle of least privilege for device access</li>
+            <li>Enabling multi-factor authentication when available</li>
+        </ul>
+
+        <h3>4. Configuration Responsibility</h3>
+        <p>All configuration changes pushed through SwytchAI are your responsibility. Always:</p>
+        <ul>
+            <li>Review configurations before approving</li>
+            <li>Test changes in a lab environment first when possible</li>
+            <li>Use the approval workflow for all production changes</li>
+            <li>Maintain rollback plans for critical changes</li>
+        </ul>
+
+        <h3>5. Reporting Violations</h3>
+        <p>If you become aware of any violations of this policy, please report them immediately to <strong>security@swytchai.net</strong></p>
+
+        <h3>6. Enforcement</h3>
+        <p>Violations may result in:</p>
+        <ul>
+            <li>Warning notification</li>
+            <li>Temporary suspension of account</li>
+            <li>Permanent termination of account</li>
+            <li>Reporting to law enforcement if applicable</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

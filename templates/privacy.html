@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 2rem auto;">
+    <div class="card-header">
+        <h2>Privacy Policy</h2>
+    </div>
+    <div class="card-body" style="line-height: 1.8;">
+        <p><strong>Last Updated:</strong> September 8, 2026</p>
+        <p>SwytchAI ("we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information.</p>
+
+        <h3>1. Information We Collect</h3>
+        <p><strong>Account Information:</strong> Name, username, email address, and organization name when you sign up.</p>
+        <p><strong>Device Credentials:</strong> Hostnames, IP addresses, usernames, and passwords for network devices you add to SwytchAI. These are encrypted and stored securely.</p>
+        <p><strong>Usage Data:</strong> Actions performed within the platform (config pulls, changes, approvals) are logged for audit purposes.</p>
+        <p><strong>Payment Information:</strong> Credit card and billing details are processed and stored by Stripe. We never see or store your full card number.</p>
+
+        <h3>2. How We Use Your Information</h3>
+        <ul>
+            <li>To provide and maintain the SwytchAI Service</li>
+            <li>To process payments and manage subscriptions</li>
+            <li>To maintain audit logs for compliance and security</li>
+            <li>To send important service notifications</li>
+            <li>To improve the Service based on usage patterns</li>
+        </ul>
+
+        <h3>3. Data Security</h3>
+        <p>We implement industry-standard security measures including:</p>
+        <ul>
+            <li>Bcrypt password hashing</li>
+            <li>HTTPS encryption for all data in transit</li>
+            <li>Session timeouts and rate limiting</li>
+            <li>Role-based access control (RBAC)</li>
+            <li>Complete audit trail of all actions</li>
+            <li>Organizational data isolation (multi-tenant architecture)</li>
+        </ul>
+
+        <h3>4. Data Sharing</h3>
+        <p>We do NOT sell your data. We only share information with:</p>
+        <ul>
+            <li><strong>Stripe</strong> — for payment processing only</li>
+            <li><strong>Law enforcement</strong> — only when required by law</li>
+        </ul>
+
+        <h3>5. Data Retention</h3>
+        <p>We retain your data for as long as your account is active. Upon account deletion, all data including device credentials, configurations, and audit logs are permanently deleted within 30 days.</p>
+
+        <h3>6. Your Rights</h3>
+        <p>You have the right to:</p>
+        <ul>
+            <li>Access your personal data at any time through the dashboard</li>
+            <li>Update or correct your information</li>
+            <li>Request deletion of your account and all associated data</li>
+            <li>Export your data</li>
+            <li>Opt out of non-essential communications</li>
+        </ul>
+
+        <h3>7. Cookies</h3>
+        <p>SwytchAI uses session cookies to maintain your login state. We do not use tracking cookies or third-party analytics.</p>
+
+        <h3>8. Children's Privacy</h3>
+        <p>SwytchAI is not intended for use by individuals under 18. We do not knowingly collect information from minors.</p>
+
+        <h3>9. Changes to This Policy</h3>
+        <p>We may update this Privacy Policy at any time. We will notify users of significant changes via email or in-app notification.</p>
+
+        <h3>10. Contact</h3>
+        <p>For privacy concerns, contact us at <strong>privacy@swytchai.net</strong></p>
+    </div>
+</div>
+{% endblock %}

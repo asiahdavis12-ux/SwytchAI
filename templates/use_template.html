@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ template.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ template.icon }} {{ template.name }}</h2>
+    <a href="{{ url_for('config_templates') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c;">← All Templates</a>
+</div>
+
+<p style="color: #90a4ae; margin-bottom: 1.5rem;">{{ template.description }}</p>
+
+{% if config %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem; border: 1px solid rgba(105,240,174,0.3);">
+    <h3 style="color: #69f0ae; margin-bottom: 1rem;">✅ Generated Config</h3>
+    <pre style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: 8px; color: #69f0ae; font-family: 'Courier New', monospace; overflow-x: auto; white-space: pre-wrap;">{{ config }}</pre>
+    <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+        <button onclick="navigator.clipboard.writeText(document.querySelector('pre').innerText); this.innerText='✅ Copied!'" class="btn btn-primary">📋 Copy to Clipboard</button>
+        <a href="{{ url_for('changes') }}" class="btn" style="background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.2);">📝 Submit as Change Request</a>
+        <a href="{{ url_for('use_template', template_id=template_id) }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c;">🔄 Generate Another</a>
+    </div>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('use_template', template_id=template_id) }}">
+    <div class="card" style="padding: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Fill in the details</h3>
+        {% for field in template.fields %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 600; margin-bottom: 0.3rem; color: #b0bec5;">{{ template.labels[field] }}</label>
+            <input type="text" name="{{ field }}" placeholder="{{ template.placeholders[field] }}" required
+                   style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff; font-size: 0.95rem;">
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem; margin-top: 0.5rem;">⚡ Generate Config</button>
+    </div>
+</form>
+{% endblock %}

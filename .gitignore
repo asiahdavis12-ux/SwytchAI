@@ -1,0 +1,47 @@
+
+# Secrets
+.env
+*.pem
+swytchai-key.pem
+
+# Database
+swytchai.db
+*.db
+
+# User data
+user_database.json
+api_keys.json
+notifications.json
+audit_log.json
+change_logs/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+# .gitignore — Files that should NEVER be uploaded to GitHub
+
+# Secret credentials
+.env
+
+# User database (contains password hashes)
+user_database.json
+
+# Saved configs (may contain sensitive device data)
+saved_configs/
+
+# Change logs
+change_logs/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE files
+.vscode/
+.idea/
+

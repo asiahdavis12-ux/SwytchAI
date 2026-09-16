@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Devices - {{ tag }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🏷️ Devices tagged: <span style="color: #00e5ff;">{{ tag }}</span></h2>
+    <a href="{{ url_for('devices') }}" style="padding: 8px 20px; background: rgba(0,229,255,0.1); color: #00e5ff; border-radius: 8px; text-decoration: none; font-weight: 600;">← All Devices</a>
+</div>
+
+<!-- Tag Filter -->
+<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+    {% for t in all_tags %}
+    <a href="{{ url_for('filter_devices_by_tag', tag=t) }}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 0.85rem; font-weight: 600; {% if t == tag %}background: #00e5ff; color: #0a1929;{% else %}background: rgba(0,229,255,0.1); color: #00e5ff;{% endif %}">{{ t }}</a>
+    {% endfor %}
+</div>
+
+<!-- Device Tags -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🏷️ Tags</h3>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;" id="tags">
+    </div>
+    <form method="POST" action="{{ url_for('add_device_tag', device_id=device.device_id) }}" style="display: flex; gap: 0.5rem;">
+        <input type="text" name="tag" placeholder="Add tag (e.g. production, core, us-east)" style="flex: 1; padding: 0.5rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+        <button type="submit" style="padding: 0.5rem 1rem; background: #00e5ff; color: #0a1929; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">+ Add</button>
+    </form>
+</div>
+
+{% if devices %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for device in devices %}
+    <div style="background: #112240; border-radius: 12px; padding: 1.5rem; border: 1px solid #1e3a5f;">
+        <div style="color: #e6f1ff; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">{{ device.hostname }}</div>
+        <div style="color: #8892b0; margin-bottom: 0.5rem;">{{ device.host }}</div>
+        <span style="background: rgba(0,229,255,0.1); color: #00e5ff; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem;">{{ device.vendor }}</span>
+        <div style="margin-top: 1rem;">
+            <a href="{{ url_for('device_facts', device_id=device.device_id) }}" style="padding: 6px 16px; background: linear-gradient(135deg, #00e5ff, #b388ff); color: #0a1929; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem;">View Details</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align: center; padding: 3rem; color: #8892b0;">
+    <p style="font-size: 1.2rem;">No devices found with tag "<strong style="color: #e6f1ff;">{{ tag }}</strong>"</p>
+</div>
+{% endif %}
+{% endblock %}

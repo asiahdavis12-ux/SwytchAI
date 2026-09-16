@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Compliance Check{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🛡️ Compliance Scanner</h2>
+    <form method="POST" action="{{ url_for('compliance_demo') }}" style="display:inline;">
+        <button type="submit" class="btn" style="background: linear-gradient(135deg, #69f0ae, #00e676); color: #0a1929; font-weight: 600;">▶️ Run Demo Scan</button>
+    </form>
+</div>
+
+{% if report %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem; border: 1px solid {% if report.score >= 80 %}rgba(105,240,174,0.3){% elif report.score >= 50 %}rgba(255,171,64,0.3){% else %}rgba(255,82,82,0.3){% endif %};">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="color: #e0e0e0;">📊 Compliance Report: {{ report.device }}</h3>
+            <p style="color: #78909c; margin-top: 0.25rem;">{{ report.total }} rules checked</p>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: {% if report.score >= 80 %}#69f0ae{% elif report.score >= 50 %}#ffab40{% else %}#ff5252{% endif %};">{{ report.score }}%</div>
+            <div style="color: #90a4ae; font-size: 0.85rem;">Compliance Score</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin: 1.25rem 0; flex-wrap: wrap;">
+        <div style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(105,240,174,0.1); color: #69f0ae; font-weight: 600;">✅ {{ report.passed }} Passed</div>
+        <div style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,82,82,0.1); color: #ff5252; font-weight: 600;">❌ {{ report.failed }} Failed</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>Fix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in report.results %}
+            <tr>
+                <td>{{ r.icon }} {{ r.name }}<br><span style="color: #78909c; font-size: 0.8rem;">{{ r.description }}</span></td>
+                <td>
+                    {% if r.severity == 'critical' %}<span style="color: #ff5252; font-weight: 600;">Critical</span>
+                    {% elif r.severity == 'high' %}<span style="color: #ffab40; font-weight: 600;">High</span>
+                    {% elif r.severity == 'medium' %}<span style="color: #29b6f6; font-weight: 600;">Medium</span>
+                    {% else %}<span style="color: #78909c;">Low</span>{% endif %}
+                </td>
+                <td>{% if r.passed %}<span class="badge badge-approved">✅ Pass</span>{% else %}<span class="badge badge-rejected">❌ Fail</span>{% endif %}</td>
+                <td>{% if r.fix %}<code style="background: rgba(0,0,0,0.3); padding: 0.25rem 0.5rem; border-radius: 4px; color: #ffab40; font-size: 0.8rem;">{{ r.fix }}</code>{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('compliance_scan') }}">
+    <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">🖧 Select Device to Scan</h3>
+        {% if devices %}
+        <select name="device_id" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff;">
+            <option value="">Choose a device...</option>
+            {% for d in devices %}
+            <option value="{{ d.device_id }}">{{ d.hostname }} ({{ d.host }})</option>
+            {% endfor %}
+        </select>
+        {% else %}
+        <p style="color: #78909c;">No devices added. <a href="{{ url_for('add_device_web') }}">Add a device</a> or use the Demo Scan above.</p>
+        {% endif %}
+    </div>
+
+    <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">📋 Select Rules (leave blank for all)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem;">
+            {% for rid, rule in rules.items() %}
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; border-radius: 6px; background: rgba(255,255,255,0.03);">
+                <input type="checkbox" name="rules" value="{{ rid }}">
+                <span>{{ rule.icon }} {{ rule.name }}</span>
+                <span style="margin-left: auto; font-size: 0.75rem; color: {% if rule.severity == 'critical' %}#ff5252{% elif rule.severity == 'high' %}#ffab40{% else %}#78909c{% endif %};">{{ rule.severity }}</span>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if devices %}
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">🛡️ Run Compliance Scan</button>
+    {% endif %}
+</form>
+{% endblock %}

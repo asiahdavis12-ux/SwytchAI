@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Device Health — {{ device.hostname }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ device.hostname }}</h1>
+    <p style="color: #78909c;">{{ device.host }} &middot; {{ device.vendor }}</p>
+</div>
+
+<!-- Status Banner -->
+{% if health.status == "online" %}
+<div class="card" style="margin-bottom: 1.25rem; border-left: 4px solid #69f0ae;">
+    <div class="card-body" style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem;">
+        <span style="font-size: 2rem;">🟢</span>
+        <div>
+            <div style="font-weight: 700; color: #69f0ae; font-size: 1.1rem;">Online</div>
+            <div style="color: #78909c; font-size: 0.85rem;">Model: {{ health.model }} &middot; Uptime: {{ (health.uptime // 86400) }} days</div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card" style="margin-bottom: 1.25rem; border-left: 4px solid #ff5252;">
+    <div class="card-body" style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem;">
+        <span style="font-size: 2rem;">🔴</span>
+        <div>
+            <div style="font-weight: 700; color: #ff5252; font-size: 1.1rem;">Offline</div>
+            <div style="color: #78909c; font-size: 0.85rem;">Error: {{ health.error }}</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Port Stats -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.25rem;">
+    <div class="card" style="text-align: center; padding: 1.25rem; border-top: 3px solid #00e5ff;">
+        <div style="font-size: 2rem; font-weight: 700; color: #00e5ff;">{{ health.total_ports }}</div>
+        <div style="color: #78909c; font-size: 0.85rem;">Total Ports</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.25rem; border-top: 3px solid #69f0ae;">
+        <div style="font-size: 2rem; font-weight: 700; color: #69f0ae;">{{ health.up_ports }}</div>
+        <div style="color: #78909c; font-size: 0.85rem;">Ports Up</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.25rem; border-top: 3px solid #ff5252;">
+        <div style="font-size: 2rem; font-weight: 700; color: #ff5252;">{{ health.down_ports }}</div>
+        <div style="color: #78909c; font-size: 0.85rem;">Ports Down</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.25rem; border-top: 3px solid #ffab40;">
+        <div style="font-size: 2rem; font-weight: 700; color: #ffab40;">{{ health.error_ports }}</div>
+        <div style="color: #78909c; font-size: 0.85rem;">Port Errors</div>
+    </div>
+</div>
+
+<!-- Port Health Chart -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+    <div class="card">
+        <div class="card-header"><h2>Port Status</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            <canvas id="portChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h2>Port Errors</h2></div>
+        <div class="card-body" style="padding: 1rem;">
+            {% if health.port_errors %}
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 0.5rem; color: #78909c; font-size: 0.8rem;">Interface</th>
+                        <th style="text-align: center; padding: 0.5rem; color: #78909c; font-size: 0.8rem;">RX Errors</th>
+                        <th style="text-align: center; padding: 0.5rem; color: #78909c; font-size: 0.8rem;">TX Errors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for iface, errors in health.port_errors.items() %}
+                    <tr>
+                        <td style="padding: 0.5rem; color: #ffab40; font-weight: 600;">{{ iface }}</td>
+                        <td style="text-align: center; padding: 0.5rem; color: #ff5252;">{{ errors.rx_errors }}</td>
+                        <td style="text-align: center; padding: 0.5rem; color: #ff5252;">{{ errors.tx_errors }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 2rem; color: #69f0ae;">
+                <span style="font-size: 2rem;">✅</span>
+                <p style="margin-top: 0.5rem;">No port errors detected!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Interface Table -->
+<div class="card">
+    <div class="card-header"><h2>All Interfaces</h2></div>
+    <div class="card-body" style="padding: 0;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding: 0.75rem 1rem; color: #78909c; font-size: 0.8rem;">Interface</th>
+                    <th style="text-align: center; padding: 0.75rem; color: #78909c; font-size: 0.8rem;">Status</th>
+                    <th style="text-align: center; padding: 0.75rem; color: #78909c; font-size: 0.8rem;">Enabled</th>
+                    <th style="text-align: center; padding: 0.75rem; color: #78909c; font-size: 0.8rem;">Speed</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for name, iface in health.interfaces.items() %}
+                <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 0.6rem 1rem; font-weight: 600;">{{ name }}</td>
+                    <td style="text-align: center; padding: 0.6rem;">
+                        {% if iface.is_up %}
+                        <span style="color: #69f0ae; font-weight: 700;">● UP</span>
+                        {% else %}
+                        <span style="color: #ff5252; font-weight: 700;">● DOWN</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; padding: 0.6rem;">
+                        {% if iface.is_enabled %}
+                        <span style="color: #69f0ae;">Yes</span>
+                        {% else %}
+                        <span style="color: #78909c;">No</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; padding: 0.6rem; color: #b0bec5;">
+                        {% if iface.speed > 0 %}{{ iface.speed }} Mbps{% else %}—{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 1.25rem;">
+    <a href="{{ url_for('devices') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #b0bec5; border: 1px solid rgba(255,255,255,0.1);">← Back to Devices</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var health = JSON.parse('{{ health_json | safe }}');
+    
+    new Chart(document.getElementById('portChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Up', 'Down'],
+            datasets: [{
+                data: [health.up_ports, health.down_ports],
+                backgroundColor: ['#69f0ae', '#ff5252'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15, color: '#78909c' } }
+            }
+        }
+    });
+</script>
+<!-- Device Tags -->
+<div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;">
+    <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🏷️ Tags</h3>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        {% if tags %}
+        {% for tag in tags %}
+        <div style="display: flex; align-items: center; gap: 0.25rem; background: rgba(0,229,255,0.1); padding: 4px 12px; border-radius: 20px;">
+            <a href="{{ url_for('filter_devices_by_tag', tag=tag.tag) }}" style="color: #00e5ff; text-decoration: none; font-size: 0.85rem;">{{ tag.tag }}</a>
+            <form method="POST" action="{{ url_for('delete_device_tag', device_id=device.device_id, tag_id=tag.tag_id) }}" style="display: inline;">
+                <button type="submit" style="background: none; border: none; color: #ff5252; cursor: pointer; font-size: 0.8rem;">✕</button>
+            </form>
+        </div>
+        {% endfor %}
+        {% else %}
+        <span style="color: #8892b0;">No tags yet</span>
+        {% endif %}
+    </div>
+    <form method="POST" action="{{ url_for('add_device_tag', device_id=device.device_id) }}" style="display: flex; gap: 0.5rem;">
+        <input type="text" name="tag" placeholder="Add tag (e.g. production, core, us-east)" style="flex: 1; padding: 0.5rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+        <button type="submit" style="padding: 0.5rem 1rem; background: #00e5ff; color: #0a1929; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">+ Add</button>
+    </form>
+</div>
+{% endblock %}

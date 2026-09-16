@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}API Documentation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>📡 SwytchAI REST API Documentation</h2>
+    <p style="color: #8892b0;">Integrate SwytchAI into your workflows with our REST API</p>
+</div>
+
+<!-- Authentication -->
+<div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+    <h3 style="color: #00e5ff; margin-bottom: 1rem;">🔐 Authentication</h3>
+    <p style="color: #ccd6f6; margin-bottom: 1rem;">All API requests require an API key passed in the header:</p>
+    <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #69f0ae;">
+        X-API-Key: your_api_key_here
+    </div>
+    <p style="color: #8892b0; margin-top: 1rem;">Generate your API key from the Dashboard → Settings page.</p>
+</div>
+
+<!-- Base URL -->
+<div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+    <h3 style="color: #00e5ff; margin-bottom: 1rem;">🌐 Base URL</h3>
+    <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #69f0ae;">
+        https://swytchai.net/api
+    </div>
+</div>
+
+<!-- Endpoints -->
+<div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+    <h3 style="color: #00e5ff; margin-bottom: 1.5rem;">📋 Endpoints</h3>
+
+    <!-- Health Check -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #69f0ae; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">GET</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/health</code>
+            <span style="color: #8892b0; margin-left: auto;">Check API status</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "app": "SwytchAI",
+    "status": "running",
+    "version": "4.2"
+}</div>
+        </div>
+    </div>
+
+    <!-- List Devices -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #69f0ae; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">GET</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/devices</code>
+            <span style="color: #8892b0; margin-left: auto;">List all devices</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Headers:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; margin-bottom: 1rem;">X-API-Key: your_api_key</div>
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "devices": [
+        {
+            "device_id": 1,
+            "hostname": "core-switch-01",
+            "host": "192.168.1.1",
+            "vendor": "cisco_ios"
+        }
+    ]
+}</div>
+        </div>
+    </div>
+
+    <!-- Get Device Facts -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #69f0ae; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">GET</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/devices/{id}/facts</code>
+            <span style="color: #8892b0; margin-left: auto;">Get device facts</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "hostname": "core-switch-01",
+    "vendor": "Cisco",
+    "model": "CSR1000V",
+    "os_version": "17.3.4a",
+    "serial": "9ABCDEFG123",
+    "uptime": 1234567
+}</div>
+        </div>
+    </div>
+
+    <!-- Pull Config -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #69f0ae; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">GET</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/devices/{id}/config</code>
+            <span style="color: #8892b0; margin-left: auto;">Pull running config</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "hostname": "core-switch-01",
+    "config": "! Running configuration...\nhostname core-switch-01\n..."
+}</div>
+        </div>
+    </div>
+
+    <!-- Propose Change -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #ffd740; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">POST</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/changes</code>
+            <span style="color: #8892b0; margin-left: auto;">Propose a config change</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Request Body:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre; margin-bottom: 1rem;">{
+    "host": "core-switch-01",
+    "description": "Add VLAN 200",
+    "config_lines": [
+        "vlan 200",
+        "name ENGINEERING"
+    ]
+}</div>
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "message": "Change proposed",
+    "change_id": 1,
+    "status": "PENDING"
+}</div>
+        </div>
+    </div>
+
+    <!-- List Changes -->
+    <div style="border: 1px solid #1e3a5f; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+        <div style="background: #1a365d; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+            <span style="background: #69f0ae; color: #0a1929; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">GET</span>
+            <code style="color: #e6f1ff; font-size: 1rem;">/api/changes</code>
+            <span style="color: #8892b0; margin-left: auto;">List all config changes</span>
+        </div>
+        <div style="padding: 1rem;">
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Query Parameters:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; margin-bottom: 1rem;">?status=PENDING</div>
+            <p style="color: #8892b0; margin-bottom: 0.5rem;">Response:</p>
+            <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;">{
+    "changes": [
+        {
+            "change_id": 1,
+            "host": "core-switch-01",
+            "description": "Add VLAN 200",
+            "status": "PENDING",
+            "proposed_by": "admin"
+        }
+    ]
+}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Rate Limits -->
+<div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+    <h3 style="color: #00e5ff; margin-bottom: 1rem;">⚡ Rate Limits</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #1e3a5f;">
+                <th style="padding: 0.75rem; text-align: left; color: #8892b0;">Plan</th>
+                <th style="padding: 0.75rem; text-align: center; color: #8892b0;">Requests/Min</th>
+                <th style="padding: 0.75rem; text-align: center; color: #8892b0;">Requests/Day</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #1e3a5f;">
+                <td style="padding: 0.75rem; color: #e6f1ff;">Starter</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">30</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">5,000</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e3a5f;">
+                <td style="padding: 0.75rem; color: #e6f1ff;">Professional</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">100</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">25,000</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem; color: #e6f1ff;">Enterprise</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">Unlimited</td>
+                <td style="padding: 0.75rem; text-align: center; color: #ccd6f6;">Unlimited</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Code Examples -->
+<div style="background: #112240; border-radius: 12px; padding: 2rem;">
+    <h3 style="color: #00e5ff; margin-bottom: 1.5rem;">💻 Code Examples</h3>
+
+    <h4 style="color: #b388ff; margin-bottom: 0.75rem;">Python</h4>
+    <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre; margin-bottom: 1.5rem;">import requests
+
+API_KEY = "your_api_key"
+BASE = "https://swytchai.net/api"
+headers = {"X-API-Key": API_KEY}
+
+# List devices
+devices = requests.get(f"{BASE}/devices", headers=headers)
+print(devices.json())
+
+# Propose a change
+change = requests.post(f"{BASE}/changes", headers=headers, json={
+    "host": "core-switch-01",
+    "description": "Add VLAN 200",
+    "config_lines": ["vlan 200", "name ENGINEERING"]
+})
+print(change.json())</div>
+
+    <h4 style="color: #b388ff; margin-bottom: 0.75rem;">cURL</h4>
+    <div style="background: #0a1929; padding: 1rem; border-radius: 8px; font-family: monospace; color: #ccd6f6; white-space: pre;"># Health check
+curl https://swytchai.net/api/health
+
+# List devices
+curl -H "X-API-Key: your_key" https://swytchai.net/api/devices
+
+# Propose change
+curl -X POST -H "X-API-Key: your_key" \
+     -H "Content-Type: application/json" \
+     -d '{"host":"switch-01","description":"Add VLAN","config_lines":["vlan 200"]}' \
+     https://swytchai.net/api/changes</div>
+</div>
+{% endblock %}

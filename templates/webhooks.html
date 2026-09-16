@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Webhook Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🔗 Webhook Integrations</h2>
+    <p style="color: #8892b0;">Send real-time notifications to Slack or Microsoft Teams</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Settings Form -->
+    <div style="background: #112240; border-radius: 12px; padding: 2rem;">
+        <h3 style="color: #e6f1ff; margin-bottom: 1.5rem;">⚙️ Configuration</h3>
+        <form method="POST">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Platform</label>
+                <select name="platform" style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+                    <option value="">-- Select Platform --</option>
+                    <option value="slack" {% if settings.platform == 'slack' %}selected{% endif %}>Slack</option>
+                    <option value="teams" {% if settings.platform == 'teams' %}selected{% endif %}>Microsoft Teams</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.5rem;">Webhook URL</label>
+                <input type="url" name="webhook_url" value="{{ settings.webhook_url }}" placeholder="https://hooks.slack.com/services/..." style="width: 100%; padding: 0.75rem; background: #0a1929; color: #e6f1ff; border: 1px solid #1e3a5f; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: #8892b0; display: block; margin-bottom: 0.75rem;">Notify On:</label>
+                <div style="display: grid; gap: 0.5rem;">
+                    <label style="color: #ccd6f6; display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="notify_push" {% if settings.notify_config_push %}checked{% endif %}> Config Pushed to Device
+                    </label>
+                    <label style="color: #ccd6f6; display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="notify_approve" {% if settings.notify_config_approve %}checked{% endif %}> Config Change Approved
+                    </label>
+                    <label style="color: #ccd6f6; display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="notify_reject" {% if settings.notify_config_reject %}checked{% endif %}> Config Change Rejected
+                    </label>
+                    <label style="color: #ccd6f6; display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="notify_backup" {% if settings.notify_backup_fail %}checked{% endif %}> Backup Failure
+                    </label>
+                    <label style="color: #ccd6f6; display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="notify_user" {% if settings.notify_new_user %}checked{% endif %}> New Team Member Added
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #00e5ff, #b388ff); color: #0a1929; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Save Settings</button>
+        </form>
+    </div>
+
+    <!-- Info & Test Panel -->
+    <div>
+        <div style="background: #112240; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem;">
+            <h3 style="color: #e6f1ff; margin-bottom: 1rem;">🧪 Test Connection</h3>
+            <p style="color: #8892b0; margin-bottom: 1rem;">Send a test notification to verify your webhook is working.</p>
+            <form method="POST" action="{{ url_for('test_webhook') }}">
+                <button type="submit" style="padding: 0.75rem 2rem; background: #69f0ae; color: #0a1929; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Send Test Notification</button>
+            </form>
+        </div>
+
+        <div style="background: #112240; border-radius: 12px; padding: 2rem;">
+            <h3 style="color: #e6f1ff; margin-bottom: 1rem;">📖 Setup Guide</h3>
+            <div style="color: #8892b0;">
+                <h4 style="color: #00e5ff;">Slack Setup:</h4>
+                <ol style="padding-left: 1.2rem; margin-bottom: 1rem;">
+                    <li>Go to api.slack.com/apps</li>
+                    <li>Create New App → From Scratch</li>
+                    <li>Enable Incoming Webhooks</li>
+                    <li>Add New Webhook to Workspace</li>
+                    <li>Copy the Webhook URL and paste above</li>
+                </ol>
+
+                <h4 style="color: #b388ff;">Microsoft Teams Setup:</h4>
+                <ol style="padding-left: 1.2rem;">
+                    <li>Open the Teams channel</li>
+                    <li>Click ••• → Connectors</li>
+                    <li>Find "Incoming Webhook" → Configure</li>
+                    <li>Name it "SwytchAI" and copy the URL</li>
+                    <li>Paste the URL above</li>
+                </ol>
+            </div>
+        </div>
+
+        {% if settings.platform and settings.webhook_url %}
+        <div style="background: #112240; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; border-left: 4px solid #69f0ae;">
+            <div style="color: #69f0ae; font-weight: 700;">✅ Connected</div>
+            <div style="color: #8892b0; margin-top: 0.5rem;">Platform: <strong style="color: #e6f1ff;">{{ settings.platform|capitalize }}</strong></div>
+            <div style="color: #8892b0;">URL: <span style="color: #e6f1ff;">{{ settings.webhook_url[:50] }}...</span></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

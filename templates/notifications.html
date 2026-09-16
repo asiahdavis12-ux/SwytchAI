@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔔 Notifications</h1>
+    <div>
+        {% if notifications %}
+        <a href="{{ url_for('mark_all_read') }}" class="btn btn-sm">Mark All as Read</a>
+        <a href="{{ url_for('clear_notifications') }}" class="btn btn-sm btn-danger" onclick="return confirm('Clear all notifications?')">Clear All</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if notifications %}
+<div class="notification-list">
+    {% for notif in notifications %}
+    <div class="notification-item {{ 'unread' if not notif.read else '' }}">
+        <div class="notification-icon">
+            {% if notif.type == "success" %}✅
+            {% elif notif.type == "warning" %}⚠️
+            {% elif notif.type == "danger" %}🚫
+            {% else %}ℹ️
+            {% endif %}
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">{{ notif.title }}</div>
+            <div class="notification-message">{{ notif.message }}</div>
+            <div class="notification-time">{{ notif.created_at }}</div>
+        </div>
+        <div class="notification-actions">
+            {% if not notif.read %}
+            <a href="{{ url_for('read_notification', notification_id=notif.id) }}" class="btn btn-sm">Mark Read</a>
+            {% endif %}
+            {% if notif.link %}
+            <a href="{{ notif.link }}" class="btn btn-sm btn-primary">View</a>
+            {% endif %}
+            <a href="{{ url_for('delete_notif', notification_id=notif.id) }}" class="btn btn-sm btn-danger">✕</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>🔔 No notifications! You're all caught up.</p>
+</div>
+{% endif %}
+{% endblock %}
+

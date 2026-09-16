@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% block title %}Help & Documentation{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+
+    <div class="page-header">
+        <h1>📖 Help & Documentation</h1>
+        <p style="color: #78909c;">Everything you need to know about SwytchAI</p>
+    </div>
+
+    <!-- Search -->
+    <div style="margin-bottom: 2rem;">
+        <input type="text" id="help-search" placeholder="Search help articles..." 
+            style="width: 100%; padding: 0.85rem 1.25rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e0e0e0; font-size: 1rem;"
+            onkeyup="filterHelp()">
+    </div>
+
+    <!-- Quick Start -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>🚀 Quick Start Guide</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem;">
+            <div class="help-item">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">1. Add Your First Device</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Go to <strong>Devices</strong> → click <strong>+ Add Device</strong>. Enter your switch's hostname, IP address, vendor type, and credentials. SwytchAI supports Cisco IOS, IOS-XR, Juniper JunOS, and Arista EOS.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">2. Pull Your First Config</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">From the <strong>Devices</strong> page, click <strong>Pull Config</strong> on any device. SwytchAI connects to the switch using NAPALM, pulls the running config, and saves it with a timestamp for version tracking.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">3. Check Device Health</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Click <strong>Health</strong> on any device to see real-time status — port counts, up/down interfaces, error counters, and model information. The dashboard also shows a live health panel for all devices.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">4. Invite Your Team</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Go to <strong>Admin</strong> → add team members with appropriate roles. Admins have full access, Engineers can manage devices and configs, and Viewers have read-only access.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devices -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>🔌 Managing Devices</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">Adding a Device</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Navigate to <strong>Devices → + Add Device</strong>. You'll need the hostname, IP address or FQDN, vendor type, SSH username, and password. The device must be reachable via SSH (port 22) from SwytchAI's server.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">Supported Vendors</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">SwytchAI supports multiple vendors through NAPALM:</p>
+                <ul style="color: #b0bec5; margin-top: 0.5rem; padding-left: 1.5rem; line-height: 1.8;">
+                    <li><strong style="color: #00e5ff;">Cisco IOS</strong> — Catalyst switches, ISR routers</li>
+                    <li><strong style="color: #00e5ff;">Cisco IOS-XR</strong> — ASR, NCS series</li>
+                    <li><strong style="color: #00e5ff;">Juniper JunOS</strong> — EX, QFX, MX series</li>
+                    <li><strong style="color: #00e5ff;">Arista EOS</strong> — 7000 series switches</li>
+                </ul>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">Device Health Monitoring</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Click <strong>Health</strong> on any device to see real-time port status, interface speeds, error counters (RX/TX), and uptime. The dashboard shows an overview health panel that checks all devices automatically.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">Removing a Device</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Click <strong>Delete</strong> next to the device. You'll be asked to confirm. Only admins can delete devices. Removing a device does not delete saved configs.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Management -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>📋 Config Management</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #ffab40; margin-bottom: 0.5rem;">Pulling Configs</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Click <strong>Pull Config</strong> on any device. SwytchAI connects to the device, downloads the running configuration, and saves it with a version number and timestamp. Each pull creates a new version for tracking.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ffab40; margin-bottom: 0.5rem;">Comparing Configs (Diff)</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">After pulling multiple configs, SwytchAI automatically compares the latest version against the previous one and shows exactly what changed — added lines, removed lines, and modified sections.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ffab40; margin-bottom: 0.5rem;">Proposing Changes</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Go to <strong>Changes → Propose Change</strong>. Select a device, write the config lines you want to push, and add a description. The change goes into a pending queue for approval.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ffab40; margin-bottom: 0.5rem;">Approval Workflow</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Admins and managers can <strong>approve</strong> or <strong>reject</strong> pending changes. Approved changes can then be pushed to the device. This prevents unauthorized config modifications and maintains a full audit trail.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>🤖 AI Config Assistant</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #b388ff; margin-bottom: 0.5rem;">How It Works</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">The AI Assistant generates network configurations from natural language descriptions. Instead of writing CLI commands manually, describe what you need in plain English.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #b388ff; margin-bottom: 0.5rem;">Example Commands</h3>
+                <ul style="color: #b0bec5; margin-top: 0.5rem; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>"Create VLAN 200 named Engineering on switch core-01"</li>
+                    <li>"Configure interface GigabitEthernet0/1 with IP [IP_ADDRESS]"</li>
+                    <li>"Set up OSPF area 0 on all Layer 3 interfaces"</li>
+                    <li>"Create an access list to block traffic from 192.168.1.0/24"</li>
+                    <li>"Configure NTP server 10.0.0.1 with authentication"</li>
+                </ul>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #b388ff; margin-bottom: 0.5rem;">Best Practices</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Always review generated configs before pushing them to production. The AI provides a starting point — verify the output matches your network requirements and naming conventions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team & Roles -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>👥 Team Management & Roles</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">Role Permissions</h3>
+                <table style="width: 100%; margin-top: 0.5rem; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 0.6rem; color: #78909c; border-bottom: 1px solid rgba(255,255,255,0.1);">Permission</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #00e5ff; border-bottom: 1px solid rgba(255,255,255,0.1);">Admin</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #69f0ae; border-bottom: 1px solid rgba(255,255,255,0.1);">Engineer</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #ffab40; border-bottom: 1px solid rgba(255,255,255,0.1);">Viewer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">View dashboard</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">View devices</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Pull configs</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Propose changes</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Approve/reject changes</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td><td style="text-align: center;">❌</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Add/remove devices</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td><td style="text-align: center;">❌</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Manage users</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td><td style="text-align: center;">❌</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">View billing</td><td style="text-align: center;">✅</td><td style="text-align: center;">❌</td><td style="text-align: center;">❌</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #00e5ff; margin-bottom: 0.5rem;">Adding Team Members</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Go to <strong>Admin</strong> → fill in the new user's details and select a role. They'll receive a temporary password that must be changed on first login.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billing -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>💳 Billing & Subscriptions</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">Plans</h3>
+                <table style="width: 100%; margin-top: 0.5rem; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 0.6rem; color: #78909c; border-bottom: 1px solid rgba(255,255,255,0.1);">Feature</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #00e5ff; border-bottom: 1px solid rgba(255,255,255,0.1);">Starter $49/mo</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #69f0ae; border-bottom: 1px solid rgba(255,255,255,0.1);">Pro $99/mo</th>
+                            <th style="text-align: center; padding: 0.6rem; color: #b388ff; border-bottom: 1px solid rgba(255,255,255,0.1);">Enterprise $199/mo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Devices</td><td style="text-align: center; color: #e0e0e0;">10</td><td style="text-align: center; color: #e0e0e0;">50</td><td style="text-align: center; color: #e0e0e0;">Unlimited</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Users</td><td style="text-align: center; color: #e0e0e0;">3</td><td style="text-align: center; color: #e0e0e0;">15</td><td style="text-align: center; color: #e0e0e0;">Unlimited</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">AI Assistant</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">API Access</td><td style="text-align: center;">❌</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td></tr>
+                        <tr><td style="padding: 0.5rem; color: #b0bec5;">Priority Support</td><td style="text-align: center;">❌</td><td style="text-align: center;">✅</td><td style="text-align: center;">✅</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">14-Day Free Trial</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">All new accounts start with a 14-day free trial of the Pro plan. No credit card required. After the trial, choose the plan that fits your team.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="help-section card" style="margin-bottom: 1.25rem;">
+        <div class="card-header" onclick="toggleSection(this)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <h2>🔧 Troubleshooting</h2>
+            <span class="toggle-icon" style="color: #78909c; font-size: 1.2rem;">▼</span>
+        </div>
+        <div class="card-body section-content" style="padding: 1.25rem; display: none;">
+            <div class="help-item">
+                <h3 style="color: #ff5252; margin-bottom: 0.5rem;">"Authentication failed" when connecting to a device</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Check that the username and password are correct. Make sure SSH is enabled on the device and that the user account has privilege level 15 (Cisco) or equivalent access.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ff5252; margin-bottom: 0.5rem;">"Connection timed out"</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Verify the device IP/hostname is correct and reachable. Check that port 22 (SSH) is open on the device's firewall. If the device is behind a VPN, ensure SwytchAI's server has access.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ff5252; margin-bottom: 0.5rem;">"Access denied" on a page</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">Your role doesn't have permission for that action. Ask your admin to upgrade your role. See the <strong>Roles</strong> section above for what each role can do.</p>
+            </div>
+            <div class="help-item" style="margin-top: 1.25rem;">
+                <h3 style="color: #ff5252; margin-bottom: 0.5rem;">Device shows "Offline" in health check</h3>
+                <p style="color: #b0bec5; line-height: 1.6;">The device may be unreachable, powered off, or SSH may be disabled. Try pinging the device from your terminal. If it responds to ping but not SSH, check the device's SSH configuration.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="card" style="text-align: center; padding: 2rem;">
+        <h2 style="color: #e0e0e0; margin-bottom: 0.5rem;">Still Need Help?</h2>
+        <p style="color: #78909c; margin-bottom: 1.5rem;">Our team is here to help you get the most out of SwytchAI.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="mailto:support@swytchai.net" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">📧 Email Support</a>
+            <a href="{{ url_for('ai_assistant_page') }}" class="btn" style="padding: 0.6rem 1.5rem; background: rgba(179,136,255,0.15); color: #b388ff; border: 1px solid rgba(179,136,255,0.2);">🤖 Ask AI Assistant</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleSection(header) {
+        var content = header.nextElementSibling;
+        var icon = header.querySelector('.toggle-icon');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            icon.textContent = '▲';
+        } else {
+            content.style.display = 'none';
+            icon.textContent = '▼';
+        }
+    }
+
+    function filterHelp() {
+        var query = document.getElementById('help-search').value.toLowerCase();
+        var sections = document.querySelectorAll('.help-section');
+        sections.forEach(function(section) {
+            var text = section.textContent.toLowerCase();
+            if (text.indexOf(query) > -1) {
+                section.style.display = 'block';
+                section.querySelector('.section-content').style.display = 'block';
+                section.querySelector('.toggle-icon').textContent = '▲';
+            } else {
+                section.style.display = query.length > 0 ? 'none' : 'block';
+            }
+        });
+    }
+</script>
+{% endblock %}

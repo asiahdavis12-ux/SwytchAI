@@ -1,0 +1,124 @@
+
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👥 User Management</h1>
+    <p>Manage user accounts and roles</p>
+</div>
+
+<div class="content-grid">
+    <div class="card">
+        <div class="card-header">
+            <h2>Current Users</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Site</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.name }}</td>
+                        <td><span class="badge badge-vendor">{{ user.role }}</span></td>
+                        <td>{{ user.site }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Add New User</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('add_user_web') }}">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="e.g. jsmith" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        {% for role_id, role_info in roles.items() %}
+                        <option value="{{ role_id }}">{{ role_info.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="site">Site</label>
+                    <input type="text" id="site" name="site" placeholder="e.g. PHX026" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create User</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Role Permissions</h2>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    {% for role_id, role_info in roles.items() %}
+                    <th>{{ role_info.description }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pull Configs</td>
+                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>View Versions</td>
+                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Compare Configs</td>
+                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Propose Changes</td>
+                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Approve/Reject</td>
+                    <td>🔒</td><td>✅</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Rollback</td>
+                    <td>🔒</td><td>🔒</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Manage Users</td>
+                    <td>🔒</td><td>🔒</td><td>✅</td><td>✅</td>
+                </tr>
+                <tr>
+                    <td>Emergency Push</td>
+                    <td>🔒</td><td>🔒</td><td>🔒</td><td>✅</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

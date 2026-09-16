@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwytchAI — Thank You</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #0a1929 0%, #0d2137 50%, #0a1929 100%);">
+    <div style="width: 100%; max-width: 500px; padding: 2rem; text-align: center;">
+        <span style="font-size: 4rem;">🎉</span>
+        <h1 style="color: #00e5ff; margin: 1rem 0 0.5rem; font-size: 2rem;">Thank You!</h1>
+        <p style="color: #b0bec5; font-size: 1.1rem; line-height: 1.6;">We've received your inquiry and will get back to you within <strong style="color: #ffffff;">24 hours</strong> with a custom quote for your organization.</p>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-body" style="padding: 1.5rem;">
+                <p style="color: #78909c; margin: 0 0 0.75rem; font-size: 0.9rem;">While you wait, you can:</p>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <a href="{{ url_for('signup') }}" class="btn btn-primary" style="justify-content: center;">Start a Free Trial Now</a>
+                    <a href="/" class="btn" style="justify-content: center; background: rgba(255,255,255,0.06); color: #b0bec5; border: 1px solid rgba(255,255,255,0.1);">Back to Homepage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

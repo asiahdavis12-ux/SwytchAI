@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Two-Factor Authentication{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>🔐 Two-Factor Authentication</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c;">← Dashboard</a>
+</div>
+
+{% if just_enabled and qr_code %}
+<div class="card" style="margin-bottom: 2rem; padding: 2rem; border: 1px solid rgba(105,240,174,0.3); text-align: center;">
+    <h3 style="color: #69f0ae; margin-bottom: 1rem;">✅ 2FA Enabled Successfully!</h3>
+    <p style="color: #b0bec5; margin-bottom: 1.5rem;">Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
+    <img src="data:image/png;base64,{{ qr_code }}" alt="2FA QR Code" style="border-radius: 12px; background: white; padding: 1rem; max-width: 250px; margin-bottom: 1rem;">
+    <p style="color: #78909c; font-size: 0.85rem; margin-top: 1rem;">Or enter this secret manually:</p>
+    <code style="background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 6px; color: #ffab40; font-size: 1rem; letter-spacing: 2px;">{{ secret }}</code>
+    <p style="color: #ff5252; font-size: 0.85rem; margin-top: 1rem; font-weight: 600;">⚠️ Save this secret! You won't be able to see it again.</p>
+</div>
+{% endif %}
+
+<div class="card" style="padding: 2rem; text-align: center;">
+    {% if has_2fa and not just_enabled %}
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+    <h3 style="color: #69f0ae; margin-bottom: 0.5rem;">2FA is Enabled</h3>
+    <p style="color: #90a4ae; margin-bottom: 1.5rem;">Your account is protected with two-factor authentication.</p>
+    <form method="POST" action="{{ url_for('disable_2fa') }}">
+        <button type="submit" class="btn" style="background: rgba(255,82,82,0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.3);" onclick="return confirm('Are you sure you want to disable 2FA?')">🔓 Disable 2FA</button>
+    </form>
+    {% elif not has_2fa %}
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔓</div>
+    <h3 style="color: #ffab40; margin-bottom: 0.5rem;">2FA is Not Enabled</h3>
+    <p style="color: #90a4ae; margin-bottom: 1.5rem;">Add an extra layer of security to your account. You'll need an authenticator app like Google Authenticator or Authy.</p>
+    <form method="POST" action="{{ url_for('enable_2fa') }}">
+        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem;">🔐 Enable 2FA</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Bulk Operations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>⚡ Bulk Operations</h2>
+    <a href="{{ url_for('devices') }}" class="btn" style="background: rgba(255,255,255,0.06); color: #78909c;">← Back to Devices</a>
+</div>
+
+{% if results %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <h3 style="margin-bottom: 1rem;">📋 Results</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.device }}</td>
+                <td>
+                    {% if r.status == 'success' %}
+                    <span class="badge badge-approved">✅ Success</span>
+                    {% else %}
+                    <span class="badge badge-rejected">❌ Failed</span>
+                    {% endif %}
+                </td>
+                <td>{{ r.message }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('bulk_operations') }}">
+    <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">1️⃣ Select Action</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: {% if selected_action == 'pull_config' %}rgba(0,229,255,0.15){% else %}rgba(255,255,255,0.03){% endif %};">
+                <input type="radio" name="action" value="pull_config" {% if selected_action == 'pull_config' %}checked{% endif %} required> 📥 Pull Configs
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: {% if selected_action == 'health_check' %}rgba(0,229,255,0.15){% else %}rgba(255,255,255,0.03){% endif %};">
+                <input type="radio" name="action" value="health_check" {% if selected_action == 'health_check' %}checked{% endif %}> 🏥 Health Check
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: {% if selected_action == 'backup' %}rgba(0,229,255,0.15){% else %}rgba(255,255,255,0.03){% endif %};">
+                <input type="radio" name="action" value="backup" {% if selected_action == 'backup' %}checked{% endif %}> 💾 Backup All
+            </label>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">2️⃣ Select Devices</h3>
+        {% if devices %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #00e5ff; font-weight: 600;">
+                <input type="checkbox" id="select-all" onclick="toggleAll(this)"> Select All ({{ devices|length }} devices)
+            </label>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.75rem;">
+            {% for device in devices %}
+            <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: rgba(255,255,255,0.03);">
+                <input type="checkbox" name="device_ids" value="{{ device.device_id }}" class="device-cb">
+                <div>
+                    <div style="font-weight: 600; color: #e0e0e0;">{{ device.hostname }}</div>
+                    <div style="font-size: 0.8rem; color: #78909c;">{{ device.host }} — {{ device.vendor }}</div>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #78909c;">No devices added yet. <a href="{{ url_for('add_device_web') }}">Add your first device</a></p>
+        {% endif %}
+    </div>
+
+    {% if devices %}
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1.1rem;">⚡ Run Bulk Operation</button>
+    {% endif %}
+</form>
+
+<script>
+function toggleAll(source) {
+    var checkboxes = document.querySelectorAll('.device-cb');
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+}
+</script>
+{% endblock %}

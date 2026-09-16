@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Billing{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Billing & Subscription</h2>
+</div>
+
+<div style="text-align: right; margin-bottom: 1rem;">
+    <a href="{{ url_for('manage_billing') }}" class="btn btn-primary" style="padding: 0.6rem 1.25rem;">⚙️ Manage Plan</a>
+</div>
+
+<!-- CURRENT PLAN -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>Current Plan</h2>
+    </div>
+    <div class="card-body" style="text-align: center; padding: 2rem;">
+        <div style="font-size: 2rem; font-weight: bold; color: #00e5ff;">{{ current_plan.name }}</div>
+        <div style="font-size: 1.2rem; color: #90a4ae; margin: 0.5rem 0;">{{ current_plan.price }}</div>
+        <div style="margin-top: 1rem;">
+            <span class="badge badge-{% if billing.subscription_status == 'active' %}approved{% elif billing.subscription_status == 'trialing' %}pending{% else %}rejected{% endif %}">
+                {{ billing.subscription_status or 'trialing' }}
+            </span>
+        </div>
+        {% if billing.stripe_customer_id %}
+        <form method="POST" action="{{ url_for('manage_billing') }}" style="margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Manage Subscription</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- PLAN COMPARISON -->
+<div style="margin-top: 2rem;">
+    <h2 style="text-align: center; margin-bottom: 1.5rem;">Choose Your Plan</h2>
+    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
+        {% for key, plan in plans.items() %}
+        <div class="card" style="flex: 1; min-width: 280px; max-width: 350px; {% if key == current_plan_key %}border: 2px solid #00e5ff;{% endif %}">
+            <div class="card-body" style="text-align: center; padding: 2rem;">
+                <h3 style="color: #00e5ff;">{{ plan.name }}</h3>
+                <div style="font-size: 2rem; font-weight: bold; margin: 1rem 0;">{{ plan.price }}</div>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0;">
+                    {% for feature in plan.features %}
+                    <li style="padding: 0.4rem 0; color: #b0bec5;">✅ {{ feature }}</li>
+                    {% endfor %}
+                </ul>
+                {% if key == current_plan_key %}
+                <button class="btn btn-secondary" disabled style="width:100%;">Current Plan</button>
+                {% elif key == 'enterprise' %}
+                <a href="{{ url_for('contact_sales') }}" class="btn" style="display: block; width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #b388ff, #7c4dff); color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: 600;">Contact Sales</a>
+                {% else %}
+                <form method="POST" action="{{ url_for('subscribe') }}">
+                    <input type="hidden" name="plan" value="{{ key }}">
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Subscribe</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

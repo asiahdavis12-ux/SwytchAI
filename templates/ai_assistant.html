@@ -1,0 +1,174 @@
+
+{% extends "base.html" %}
+{% block title %}AI Assistant{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🤖 AI Config Assistant</h1>
+    <p>Tell me what you need in plain English</p>
+</div>
+
+<div class="ai-container">
+    <div class="ai-chat">
+        <div id="chat-messages" class="chat-messages">
+            <div class="chat-message bot">
+                <div class="message-content">
+                    Hey! I'm the SwytchAI assistant. Tell me what you want to configure in plain English. For example:
+                    <ul>
+                        <li>"Create VLAN 200"</li>
+                        <li>"Set IP on GigabitEthernet1"</li>
+                        <li>"Configure trunk port"</li>
+                        <li>"Add static route"</li>
+                        <li>"Set hostname"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <select id="vendor-select" class="vendor-select">
+                <option value="cisco_ios">Cisco IOS</option>
+                <option value="cisco_nxos">Cisco NX-OS</option>
+                <option value="juniper">Juniper</option>
+                <option value="arista">Arista</option>
+            </select>
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type what you need... (e.g. 'create vlan 200')" autofocus>
+            <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div class="ai-sidebar">
+        <h3>Available Commands</h3>
+        {% for cmd in commands %}
+        <div class="command-card" onclick="document.getElementById('chat-input').value='{{ cmd.keywords[0] }}'">
+            <div class="command-name">{{ cmd.description }}</div>
+            <div class="command-keywords">Try: "{{ cmd.keywords[0] }}"</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+let pendingTemplate = null;
+
+chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
+
+function addMessage(text, type) {
+    const div = document.createElement('div');
+    div.className = 'chat-message ' + type;
+    div.innerHTML = '<div class="message-content">' + text + '</div>';
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendMessage() {
+    const input = chatInput.value.trim();
+    if (!input) return;
+
+    addMessage(input, 'user');
+    chatInput.value = '';
+
+    if (pendingTemplate) {
+        handleParams(input);
+        return;
+    }
+
+    const vendor = document.getElementById('vendor-select').value;
+
+    fetch('/ai/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({input: input, vendor: vendor, params: {}})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            addMessage(data.message, 'bot');
+            return;
+        }
+        if (data.needs_params) {
+            pendingTemplate = data;
+            let paramList = data.params_needed.map(p => '<strong>' + p + '</strong>').join(', ');
+            addMessage('Got it! I\'ll help you: <strong>' + data.description + '</strong><br><br>I need these details (enter them comma-separated):<br>' + paramList, 'bot');
+            return;
+        }
+        showConfig(data);
+    });
+}
+
+function handleParams(input) {
+    const values = input.split(',').map(s => s.trim());
+    const params = {};
+    const paramNames = pendingTemplate.params_needed;
+
+    for (let i = 0; i < paramNames.length; i++) {
+        params[paramNames[i]] = values[i] || '';
+    }
+
+    const vendor = document.getElementById('vendor-select').value;
+    const templateInput = pendingTemplate.template_name;
+    pendingTemplate = null;
+
+    fetch('/ai/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            input: templateInput,
+            vendor: vendor,
+            params: params
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            addMessage(data.message, 'bot');
+            return;
+        }
+        showConfig(data);
+    });
+}
+
+function showConfig(data) {
+    const configLines = data.config_lines.join('\n');
+    const html = 'Here\'s your <strong>' + data.vendor + '</strong> config:<br><br>' +
+        '<pre class="config-output">' + configLines + '</pre>' +
+        '<br><button class="btn btn-primary btn-sm" onclick="sendToApproval(\'' +
+        encodeURIComponent(configLines) + '\', \'' +
+        encodeURIComponent(data.description) + '\')">Send to Approval Workflow</button>' +
+        ' <button class="btn btn-sm" onclick="addMessage(\'Config discarded.\', \'bot\')">Discard</button>';
+    addMessage(html, 'bot');
+}
+
+function sendToApproval(configEncoded, descEncoded) {
+    const config = decodeURIComponent(configEncoded);
+    const desc = decodeURIComponent(descEncoded);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/changes/propose';
+
+    const configInput = document.createElement('input');
+    configInput.type = 'hidden';
+    configInput.name = 'config_lines';
+    configInput.value = config;
+
+    const descInput = document.createElement('input');
+    descInput.type = 'hidden';
+    descInput.name = 'description';
+    descInput.value = '[AI Generated] ' + desc;
+
+    form.appendChild(configInput);
+    form.appendChild(descInput);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+{% endblock %}
+

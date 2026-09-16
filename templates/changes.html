@@ -1,0 +1,74 @@
+
+{% extends "base.html" %}
+{% block title %}Changes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📋 Change Workflow</h1>
+    <a href="{{ url_for('propose_change_web') }}" class="btn btn-primary">+ Propose New Change</a>
+</div>
+
+{% if changes %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Device</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Proposed By</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for change in changes %}
+        <tr>
+            <td><strong>#{{ change.change_id }}</strong></td>
+            <td>{{ change.host }}</td>
+            <td>{{ change.description }}</td>
+            <td>
+                {% if change.status == "PENDING" %}
+                <span class="badge badge-pending">⏳ Pending</span>
+                {% elif "PUSHED" in change.status %}
+                <span class="badge badge-approved">✅ Pushed</span>
+                {% elif change.status == "REJECTED" %}
+                <span class="badge badge-rejected">🚫 Rejected</span>
+                {% elif "FAILED" in change.status %}
+                <span class="badge badge-rejected">❌ Failed</span>
+                {% elif "ROLLED" in change.status %}
+                <span class="badge badge-pending">↩️ Rolled Back</span>
+                {% endif %}
+            </td>
+            <td>{{ change.proposed_by }}</td>
+            <td>{{ change.proposed_at }}</td>
+            <td>
+                {% if change.status == "PENDING" %}
+                <div class="action-buttons">
+                    <form method="POST" action="{{ url_for('approve_change', change_id=change.change_id) }}" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Approve and push this change?')">✅ Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('reject_change', change_id=change.change_id) }}" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Reject this change?')">🚫 Reject</button>
+                    </form>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr class="config-preview-row">
+            <td colspan="7">
+                <details>
+                    <summary>View Config Lines</summary>
+                    <pre class="config-preview">{% for line in change.config_lines %}{{ line }}
+{% endfor %}</pre>
+                </details>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty-state">No changes yet. Use the AI Assistant or propose a change manually!</p>
+{% endif %}
+{% endblock %}
+
