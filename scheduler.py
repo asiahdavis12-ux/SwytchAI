@@ -35,7 +35,10 @@ def run_backup(app, org_id=None):
                 config = dev.get_config()
                 dev.disconnect()
 
-                running_config = config.get("running", "")
+                if isinstance(config, dict):
+                    running_config = config.get("running", "")
+                else:
+                    running_config = str(config)
 
                 cursor.execute("""
                     INSERT INTO config_backups (device_id, org_id, hostname, config_text, backup_type, status, created_at)
